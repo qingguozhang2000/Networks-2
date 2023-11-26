@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "project2.h"
+#include "student2.h"
 
 /* 
  * A_output(message), where message is a structure of type msg, containing 
@@ -10,6 +11,8 @@
  * in-order, and correctly, to the receiving side upper layer.
  */
 void A_output(struct msg message) {
+    struct pkt packet = message_to_packet(&message);
+    tolayer3(AEntity, packet);
 }
 
 /* 

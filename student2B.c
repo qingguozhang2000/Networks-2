@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "project2.h"
+#include "student2.h"
 
 /* 
  * Note that with simplex transfer from A-to-B, there is no routine  B_output() 
@@ -11,7 +12,6 @@
  * implementation is bi-directional.
  */
 void B_output(struct msg message)  {
-
 }
 
 /*
