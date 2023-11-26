@@ -21,6 +21,8 @@ void B_output(struct msg message)  {
  * packet is the (possibly corrupted) packet sent from the A-side.
  */
 void B_input(struct pkt packet) {
+    struct msg message = packet_to_message(&packet);
+    tolayer5(BEntity, message);
 }
 
 /*
