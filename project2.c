@@ -206,8 +206,9 @@ int main( int argc, char *argv[] )     {
                 A_output(msg2give);  
             else
                 B_output(msg2give);  
+            printf("Ok until here(layer5).\n");
         }                              /* END of event is from layer 5 */
-
+        
         /* *******************************************************************
           This is a request to hand data from layer 3 up to student layer 4 
         *********************************************************************/
@@ -215,9 +216,10 @@ int main( int argc, char *argv[] )     {
             pkt2give.seqnum   = eventptr->pktptr->seqnum;
             pkt2give.acknum   = eventptr->pktptr->acknum;
             pkt2give.checksum = eventptr->pktptr->checksum;
+            
             for ( i = 0; i < MESSAGE_LENGTH; i++)  
                 pkt2give.payload[i] = eventptr->pktptr->payload[i];
-
+            
             if ( TraceLevel >= 5 )  {     /* Print out trace info if requested */
                 if ( eventptr->eventity == AEntity )   
                     printf("A: " );
@@ -233,10 +235,12 @@ int main( int argc, char *argv[] )     {
                     printf("%c", eventptr->pktptr->payload[i] );
                 printf("\n");
             }
+            
             if (eventptr->eventity == AEntity)   /* deliver packet by calling */
                    A_input(pkt2give);            /* appropriate entity */
             else
                    B_input(pkt2give);
+
             free(eventptr->pktptr);          /* free the memory for packet */
         }                             /* END of event is from layer 3 */
 
@@ -256,6 +260,7 @@ int main( int argc, char *argv[] )     {
                 A_timerinterrupt();
             else
                 B_timerinterrupt();
+            // printf("Ok until here(Timer).\n");
         }                             /* END of event is interrupt request */
         else  {
             printf("INTERNAL PANIC: unknown event type \n");
