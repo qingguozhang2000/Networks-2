@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "project2.h"
  
 /* ***************************************************************************
@@ -27,18 +28,23 @@
  * All these routines are in layer 4.
  */
 
+int calculateChecksum(char* vdata, int acknum, int seqnum);
+int calculateChecksumForResponse(int acknum, int seqnum);
+
 struct pkt* message_to_packet(struct msg *p_message) {
     struct pkt* new_packet = (struct pkt*) malloc(sizeof(struct pkt));
 
 
     new_packet->seqnum = 0;
     new_packet->acknum = 0;
-    new_packet->checksum = calculateChecksum(p_message->data, new_packet->acknum, new_packet->seqnum);
+    int new_checksum = calculateChecksum(p_message->data, new_packet->acknum, new_packet->seqnum);
+    new_packet->checksum = new_checksum;
     // new_packet->checksum = 0;
-    printf("Ok until here.(now)\n");
+    // printf("Ok until here.(now)\n");
 
 
     memcpy(new_packet->payload, p_message->data, 20 * sizeof(char));
+    // printf("Message: %s, Packet data: %s\n", , supposed_checksum);
 
 
     return new_packet;
@@ -93,14 +99,14 @@ void A_input(struct pkt packet) {
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void A_timerinterrupt() {
-
-
+    
 }  
 
 
 /* The following routine will be called once (only) before any other    */
 /* entity A routines are called. You can use it to do any initialization */
 void A_init() {
+    
 }
 
 /*
@@ -130,17 +136,23 @@ void B_input(struct pkt packet) {
 
     // // Checks to see if the checksum is good
     // int checksum_good = 0;
-    // int checksum_good = strcmp(calculateChecksum(packet.payload, packet.acknum, packet.seqnum), packet.checksum);
-    // if (checksum_good == 0) {
-    tolayer5(BEntity, *message);
-    // sendACK(BEntity);
-    respondPkt = (struct pkt*)malloc(sizeof(struct pkt));
-    respondPkt->seqnum = 0;
-    respondPkt->acknum = 0;//ACK
-    respondPkt->checksum = calculateChecksumForResponse(respondPkt->acknum, respondPkt->seqnum);
-    tolayer3(BEntity, *respondPkt);
+    int supposed_checksum = calculateChecksum(packet.payload, packet.acknum, packet.seqnum);
+    printf("Packet checksum: %d, Supposed checksum: %d\n", packet.checksum, supposed_checksum);
+    
+    // If the packet is corrupted
+    // while (packet.checksum != supposed_checksum) {
 
     // }
+    if (packet.checksum == supposed_checksum) {
+        tolayer5(BEntity, *message);
+        // sendACK(BEntity);
+        respondPkt = (struct pkt*)malloc(sizeof(struct pkt));
+        respondPkt->seqnum = 0;
+        respondPkt->acknum = 0;//ACK
+        respondPkt->checksum = calculateChecksumForResponse(respondPkt->acknum, respondPkt->seqnum);
+        tolayer3(BEntity, *respondPkt);
+
+    }
 }
 
 
@@ -160,56 +172,6 @@ void  B_timerinterrupt() {
  */
 void B_init() {
 }
-
-
-// void toLayer3(int AorB, struct pkt packet) {
-
-
-// }
-
-
-// void toLayer5(int AorB, struct msg datasent) {
-   
-// }
-
-
-
-
-// void sendACK(int AorB) {
-//     char* ACK_msg = (char*)malloc(20 * sizeof(char));
-//     ACK_msg = "ACK ";
-//     char* ACK_msg = (char*)malloc(20 * sizeof(char));
-//     char ACK_number = ":200";
-//     ACK_msg = strcat(ACK_msg, ACK_number);
-//     // for (int i = strlen(ACK_msg); i < strlen(ACK_msg) + strlen(ACK_number) + 1; i++) {
-//     //     ACK_msg[i] = ACK_number[i - strlen(ACK_msg)];
-//     // }
-//     printf("Okay here(beginning)\n");
-
-
-//     struct msg ACK;
-//     // memcpy(ACK.data, ACK_msg, 20 * sizeof(char));
-//     for (int i = 0; i < 20; i++) {
-//         if (ACK_number[i] != NULL){
-//             ACK.data[i] = ACK_number[i];
-//         } else {
-//             ACK.data[i] = 0;
-//         }
-//     }
-
-
-//     puts(strlen(ACK.data));
-//     puts(strlen(ACK_number));
-//     puts(ACK.data);
-//     printf("Okay here(loop)\n");
-
-
-//     if (AorB) {
-//         B_output(ACK);
-//     } else {
-//         A_output(ACK);
-//     }
-// }
 
 
 //calculate checksum; this function comes from internet

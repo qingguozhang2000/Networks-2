@@ -50,6 +50,15 @@ struct   pkt {
     char payload[MESSAGE_LENGTH];
 };
 
+//structure for putting incoming message passed in parameter of function 
+//A_output() into a linked list, so that when the ack of the previous 
+//sending message arrives, the first message in linked list would be 
+//packed and sent from the sender, if there is one 
+struct msgQueue { 
+        struct msg *waitingMessage; 
+        struct msgQueue *next; 
+};
+
 /*
  * PROTOTYPES - These are in student.c
  * */
