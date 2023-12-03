@@ -1,11 +1,11 @@
-// Adapted from https://www.geeksforgeeks.org/queue-linked-list-implementation/s
+// Adapted from https://www.geeksforgeeks.org/queue-linked-list-implementation
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "./queue.h"
 
 // A utility function to create a new linked list node.
-struct QNode* newNode(struct msg message)
+struct QNode* create_node(struct msg message)
 {
 	struct QNode* p_node = (struct QNode*) malloc(sizeof(struct QNode));
 
@@ -16,7 +16,7 @@ struct QNode* newNode(struct msg message)
 }
 
 // A utility function to create an empty queue
-struct Queue* createQueue()
+struct Queue* create_queue()
 {
 	struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
 	q->front = q->rear = NULL;
@@ -25,10 +25,10 @@ struct Queue* createQueue()
 }
 
 // The function to add a key k to q
-void enQueue(struct Queue* q, struct msg message)
+void enqueue(struct Queue* q, struct msg message)
 {
 	// Create a new LL node
-	struct QNode* p_node = newNode(message);
+	struct QNode* p_node = create_node(message);
 
 	// If queue is empty, then new node is front and rear
 	// both
@@ -43,7 +43,7 @@ void enQueue(struct Queue* q, struct msg message)
 }
 
 // Function to remove a key from given queue q
-struct msg* deQueue(struct Queue* q)
+struct msg* dequeue(struct Queue* q)
 {
 	// Store previous front
 	struct QNode* node = q->front;

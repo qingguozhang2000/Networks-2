@@ -11,16 +11,16 @@ struct msg message(int i) {
 
 int main()
 {
-	struct Queue* q = createQueue();
+	struct Queue* q = create_queue();
 
-	enQueue(q, message(1));
-	enQueue(q, message(2));
-	deQueue(q);
-	deQueue(q);
-	enQueue(q, message(3));
-	enQueue(q, message(4));
-	enQueue(q, message(5));
-	deQueue(q);
+	enqueue(q, message(1));
+	enqueue(q, message(2));
+	dequeue(q);
+	dequeue(q);
+	enqueue(q, message(3));
+	enqueue(q, message(4));
+	enqueue(q, message(5));
+	dequeue(q);
 
 	printf("Queue Front : %s\n", ((q->front != NULL) ? (q->front)->message.data : ""));
 	printf("Queue Rear : %s\n", ((q->rear != NULL) ? (q->rear)->message.data : ""));

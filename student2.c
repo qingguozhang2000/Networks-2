@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "student2.h"
  
 /* ***************************************************************************
@@ -47,22 +44,22 @@ void A_output(struct msg message) {
 	*/
     debug_log("A_output", "received message from application");
 
-	switch (A_state.senderMode) {
+	switch (A_state.waiting_mode) {
 		case WAIT_FOR_MSG:
 			// sending packets do not need to set acknum
 			debug_log("A_output", "Send packet to layer3; start timer; wait for ACK");
-			current_packet = make_pkt(message.data, A_state.seqnum, DEFAULT_ACK_NUM);
+			current_packet = make_packet(message.data, A_state.seqnum, DEFAULT_ACK_NUM);
 			tolayer3(AEntity, current_packet);
 
 			// A now waits for ACK; start timer
 			startTimer(AEntity, TIMEOUT);
-			A_state.senderMode = WAIT_FOR_ACK;
+			A_state.waiting_mode = WAIT_FOR_ACK;
 			break;
 
 		case WAIT_FOR_ACK:
 			// Last packet not ACKed, push message to queue for later processing
 			debug_log("A_output", "Last message have not finished; put this message on the queue");
-			enQueue(p_message_queue, message);
+			enqueue(p_message_queue, message);
 			break;
 	}
 }
@@ -82,17 +79,14 @@ void A_input(struct pkt packet) {
 	 */
     debug_log("A_input", "received packet from B");
 
-	int actual_checksum = calc_checksum(&packet);
-	int packet_checksum = packet.checksum;
-	int is_corrupt = actual_checksum == packet_checksum ? FALSE : TRUE;
-
+	int is_corrupt = packet_corrupted(&packet);
 	int is_ACK = packet.acknum == A_state.seqnum ? TRUE : FALSE;
 
 	if (is_ACK && !is_corrupt) {
 	    debug_log("A_input", "success ACK, stop timer and change state");
 		stopTimer(AEntity);
 		A_state.seqnum = (A_state.seqnum + 1) % 2;
-		A_state.senderMode = WAIT_FOR_MSG;
+		A_state.waiting_mode = WAIT_FOR_MSG;
 	} else if (!is_ACK) {
 	    debug_log("A_input", "got NACK, resend packet and stop timer");
 		stopTimer(AEntity);
@@ -118,7 +112,7 @@ void A_timerinterrupt() {
     debug_log("A_timerinterrupt", "A timed out waiting for ACK response from B");
 
 	// should be a redundant check
-	if (A_state.senderMode == WAIT_FOR_ACK) {
+	if (A_state.waiting_mode == WAIT_FOR_ACK) {
 	    debug_log("A_timerinterrupt", "Resend the packet again");
 		tolayer3(AEntity, current_packet);
 		startTimer(AEntity, TIMEOUT);
@@ -131,10 +125,10 @@ void A_timerinterrupt() {
 /* entity A routines are called. You can use it to do any initialization */
 void A_init() {
     debug_log("A_init", "initialize A by creating message queue");
-    p_message_queue = createQueue();
+    p_message_queue = create_queue();
 
 	A_state.seqnum = 0;
-	A_state.senderMode = WAIT_FOR_MSG;
+	A_state.waiting_mode = WAIT_FOR_MSG;
 }
 
 /*
@@ -163,18 +157,15 @@ void B_input(struct pkt packet) {
 	 * R0: !corrupt(rcvpkt) && has_seq0(rcvpkt)
 	 *     extract(rcvpkt, data)
 	 *     delivert_data(data)
-	 *     sndpkt = make_pkt(ACK, 0, checksum)
+	 *     sndpkt = make_packet(ACK, 0, checksum)
 	 *     udt_send(sndpkt)
 	 * R1: corrupt(rcvpkt) || has_seq0(rcvpkt)
-	 *     sndpkt = make_pkt(ACK, 0, checksum)
+	 *     sndpkt = make_packet(ACK, 0, checksum)
 	 *     udt_send(sndpkt)
 	 */
     debug_log("B_input", "B received request packets from A");
 
-	int actual_checksum = calc_checksum(&packet);
-	int packet_checksum = packet.checksum;
-	int is_corrupt = actual_checksum == packet_checksum ? FALSE : TRUE;
-
+	int is_corrupt = packet_corrupted(&packet);
 	int is_expected_packet = packet.seqnum == B_state.seqnum ? TRUE : FALSE;
 
 	if (is_expected_packet && !is_corrupt) {
@@ -187,13 +178,13 @@ void B_input(struct pkt packet) {
 		debug_log("B_input", "packet corrupted; send NACK to layer 3");
 		// send packet seq no as it is received
 		// nextseqnum doesn't have any meaning here
-		struct pkt ack = make_pkt(packet.payload, packet.seqnum, !B_state.seqnum);
+		struct pkt ack = make_packet(packet.payload, packet.seqnum, !B_state.seqnum);
 		tolayer3(BEntity, ack);
 	} else if (!is_expected_packet) {
 		debug_log("B_input", "duplicate packet; resend ACK to layer 3");
 		// send packet seq no as it is received
 		// nextseqnum doesn't have any meaning here
-		struct pkt ack = make_pkt(packet.payload, packet.seqnum, !B_state.seqnum);
+		struct pkt ack = make_packet(packet.payload, packet.seqnum, !B_state.seqnum);
 		tolayer3(BEntity, ack);
 	}
 }
@@ -218,37 +209,5 @@ void B_init() {
     // debug_log("B_init", "do nothing for now");
 
 	B_state.seqnum = 0;
-	B_state.senderMode = WAIT_FOR_MSG;
-}
-
-struct pkt make_pkt(const char data[MESSAGE_LENGTH], int seqNum, int ackNum) {
-	struct pkt packet = {seqNum, ackNum, 0, ""};
-	strncpy(packet.payload, data, MESSAGE_LENGTH);
-	packet.checksum = calc_checksum(&packet);
-	return packet;
-}
-
-int calc_checksum(const struct pkt *packet) {
-	int seqnum = packet->seqnum;
-	int acknum = packet->acknum;
-	const char *payload = packet->payload;
-
-    int i, checksum = 0;
-
-    if (payload != NULL) {
-        for(i = 0; i < MESSAGE_LENGTH; i++) {
-            checksum += (int)(payload[i]) * i;
-        }
-    }
-
-    checksum += acknum * 21;
-    checksum += seqnum * 22;
-
-    return checksum;
-}
-
-void debug_log(char *function_name, char *log_message) {
-    if ( TraceLevel >= 0 ) {
-        printf("--- In %s: %s\n", function_name, log_message);
-    }
+	B_state.waiting_mode = WAIT_FOR_MSG;
 }
