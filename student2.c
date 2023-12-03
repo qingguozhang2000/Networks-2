@@ -47,15 +47,12 @@ void A_output(struct msg message) {
 	*/
     debug_log("A_output", "received message from application");
 
-	A_state.n_layer5++;
-
 	switch (A_state.senderMode) {
 		case WAIT_FOR_MSG:
 			// sending packets do not need to set acknum
 			debug_log("A_output", "Send packet to layer3; start timer; wait for ACK");
-			current_packet = make_pkt(message.data, A_state.seqnum, ACK_ABP_DEFAULT);
+			current_packet = make_pkt(message.data, A_state.seqnum, DEFAULT_ACK_NUM);
 			tolayer3(AEntity, current_packet);
-			A_state.n_layer3++;
 
 			// A now waits for ACK; start timer
 			startTimer(AEntity, TIMEOUT);
@@ -101,7 +98,6 @@ void A_input(struct pkt packet) {
 		stopTimer(AEntity);
 		tolayer3(AEntity, current_packet);
 		startTimer(AEntity, TIMEOUT);
-		A_state.n_layer3++;
 	} else if (is_corrupt) {
 	    debug_log("A_input", "ACK corrupted, do nothing and wait for timeout");
 	}
@@ -125,7 +121,6 @@ void A_timerinterrupt() {
 	if (A_state.senderMode == WAIT_FOR_ACK) {
 	    debug_log("A_timerinterrupt", "Resend the packet again");
 		tolayer3(AEntity, current_packet);
-		A_state.n_layer3++;
 		startTimer(AEntity, TIMEOUT);
 	} else {
 		perror(">> Problem\n");
@@ -140,8 +135,6 @@ void A_init() {
 
 	A_state.seqnum = 0;
 	A_state.senderMode = WAIT_FOR_MSG;
-	A_state.n_layer3 = 0;
-	A_state.n_layer5 = 0;
 }
 
 /*
@@ -184,15 +177,12 @@ void B_input(struct pkt packet) {
 
 	int is_expected_packet = packet.seqnum == B_state.seqnum ? TRUE : FALSE;
 
-	B_state.n_layer3++;
-
 	if (is_expected_packet && !is_corrupt) {
 		debug_log("B_input", "normal packet, deliver data to layer5");
 		B_state.seqnum = (B_state.seqnum + 1) % 2;
         struct msg message;
         memcpy(message.data, packet.payload, MESSAGE_LENGTH);
 		tolayer5(BEntity, message);
-		B_state.n_layer5++;
 	} else if (is_corrupt) {
 		debug_log("B_input", "packet corrupted; send NACK to layer 3");
 		// send packet seq no as it is received
@@ -229,34 +219,25 @@ void B_init() {
 
 	B_state.seqnum = 0;
 	B_state.senderMode = WAIT_FOR_MSG;
-	B_state.n_layer3 = 0;
-	B_state.n_layer5 = 0;
 }
 
-
-void a_send_message(int seqnum, int acknum, struct msg message) {
-    struct pkt packet;
-
-    packet.seqnum = seqnum;
-    packet.acknum = acknum;
-    packet.checksum = calculateChecksum(seqnum, acknum, message.data);
-
-    memcpy(packet.payload, message.data, MESSAGE_LENGTH);
-
-    tolayer3(AEntity, packet);
+struct pkt make_pkt(const char data[MESSAGE_LENGTH], int seqNum, int ackNum) {
+	struct pkt packet = {seqNum, ackNum, 0, ""};
+	strncpy(packet.payload, data, MESSAGE_LENGTH);
+	packet.checksum = calc_checksum(&packet);
+	return packet;
 }
 
 int calc_checksum(const struct pkt *packet) {
-    return calculateChecksum(packet->seqnum, packet->acknum, packet->payload);
-}
+	int seqnum = packet->seqnum;
+	int acknum = packet->acknum;
+	const char *payload = packet->payload;
 
-//calculate checksum; this function comes from internet
-int calculateChecksum(int seqnum, int acknum, const char* vdata) {
     int i, checksum = 0;
 
-    if (vdata != NULL) {
+    if (payload != NULL) {
         for(i = 0; i < MESSAGE_LENGTH; i++) {
-            checksum += (int)(vdata[i]) * i;
+            checksum += (int)(payload[i]) * i;
         }
     }
 
@@ -270,23 +251,4 @@ void debug_log(char *function_name, char *log_message) {
     if ( TraceLevel >= 0 ) {
         printf("--- In %s: %s\n", function_name, log_message);
     }
-}
-
-struct pkt make_pkt(const char data[MESSAGE_LENGTH], int seqNum, int ackNum) {
-	struct pkt packet = {seqNum, ackNum, 0, ""};
-	strncpy(packet.payload, data, MESSAGE_LENGTH);
-	packet.checksum = calc_checksum(&packet);
-	return packet;
-}
-
-void writeLog(FILE *fp, int AorB, char *msg, const struct pkt *p, struct msg *m, float time) {
-	char ch = (AorB == AEntity) ? 'A' : 'B';
-	if (p != NULL) {
-		fprintf(fp, "[%c] @%f %s. Packet[seq=%d,ack=%d,check=%d,data=%s..]\n", ch, time,
-		        msg, p->seqnum, p->acknum, p->checksum, p->payload);
-	} else if (m != NULL) {
-		fprintf(fp, "[%c] @%f %s. Message[data=%s..]\n", ch, time, msg, m->data);
-	} else {
-		fprintf(fp, "[%c] @%f %s.\n", ch, time, msg);
-	}
 }

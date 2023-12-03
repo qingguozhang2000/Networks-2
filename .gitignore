@@ -1,4 +1,5 @@
 *.o
+*.dSYM
 .vscode
 .DS_Store
 p2
