@@ -1,5 +1,10 @@
-p2: student2A.c student2B.c student_common.c project2.c
-	gcc -g project2.c student2A.c student2B.c student_common.c -o p2
+all: p2 queue
+
+p2: project2.c student2.c queue.c
+	gcc -g project2.c student2.c queue.c -o p2
+
+queue: queue.c queue-test.c
+	gcc -g queue.c queue-test.c -o queue
 
 clean:
-	rm *.o p2
+	rm p2 queue
