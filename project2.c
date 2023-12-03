@@ -411,7 +411,7 @@ void   GetMessageString( int entity, int  SeqNum, char *ReturnString ) {
     // Now we embed the sequence number in the string
     SeqNum = SeqNum % strlen( MSG_STRING );
     ReturnString[SeqNum % MESSAGE_LENGTH ] = MSG_STRING[SeqNum];
-    printf( "GetMessageString %d   %d   %s\n", entity, SeqNum, ReturnString );    
+    // printf( "GetMessageString %d   %d   %s\n", entity, SeqNum, ReturnString );    
 }                             /* End of GetMessageString  */
 /**************************************************************************
     GetRandomNumber()

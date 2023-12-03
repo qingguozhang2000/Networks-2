@@ -83,10 +83,13 @@ void A_input(struct pkt packet) {
 	int is_ACK = packet.acknum == A_state.seqnum ? TRUE : FALSE;
 
 	if (is_ACK && !is_corrupt) {
-	    debug_log("A_input", "success ACK, stop timer and change state");
+	    debug_log("A_input", "success ACK");
+	    debug_log("A_input", "stop timer and change state");
 		stopTimer(AEntity);
 		A_state.seqnum = (A_state.seqnum + 1) % 2;
 		A_state.waiting_mode = WAIT_FOR_MSG;
+
+		process_queued_messages();
 	} else if (!is_ACK) {
 	    debug_log("A_input", "got NACK, resend packet and stop timer");
 		stopTimer(AEntity);
@@ -169,23 +172,19 @@ void B_input(struct pkt packet) {
 	int is_expected_packet = packet.seqnum == B_state.seqnum ? TRUE : FALSE;
 
 	if (is_expected_packet && !is_corrupt) {
-		debug_log("B_input", "normal packet, deliver data to layer5");
+		debug_log("B_input", "good packet, deliver data to layer5");
 		B_state.seqnum = (B_state.seqnum + 1) % 2;
         struct msg message;
         memcpy(message.data, packet.payload, MESSAGE_LENGTH);
 		tolayer5(BEntity, message);
-	} else if (is_corrupt) {
-		debug_log("B_input", "packet corrupted; send NACK to layer 3");
-		// send packet seq no as it is received
-		// nextseqnum doesn't have any meaning here
-		struct pkt ack = make_packet(packet.payload, packet.seqnum, !B_state.seqnum);
+
+		debug_log("B_input", "good packet; send ACK to layer 3");
+		struct pkt ack = make_packet(packet.payload, B_state.seqnum, packet.seqnum);
 		tolayer3(BEntity, ack);
-	} else if (!is_expected_packet) {
-		debug_log("B_input", "duplicate packet; resend ACK to layer 3");
-		// send packet seq no as it is received
-		// nextseqnum doesn't have any meaning here
-		struct pkt ack = make_packet(packet.payload, packet.seqnum, !B_state.seqnum);
-		tolayer3(BEntity, ack);
+	} else {
+		debug_log("B_input", "packet corrupted or not expected; send NACK to layer 3");
+		struct pkt nack = make_packet(packet.payload, packet.seqnum, !B_state.seqnum);
+		tolayer3(BEntity, nack);
 	}
 }
 
@@ -209,5 +208,13 @@ void B_init() {
     // debug_log("B_init", "do nothing for now");
 
 	B_state.seqnum = 0;
-	B_state.waiting_mode = WAIT_FOR_MSG;
+	B_state.waiting_mode = WAIT_FOR_PKT;
+}
+
+void process_queued_messages() {
+	if (p_message_queue->front != NULL) {
+		debug_log("A_input", "we still have queued messages; dequeue and process the first one");
+		struct msg *p_message = dequeue(p_message_queue);
+		A_output(*p_message);
+	}
 }

@@ -4,7 +4,7 @@
 #include "./project2.h"
 
 #define DEFAULT_ACK_NUM 0
-#define TIMEOUT 20.0
+#define TIMEOUT 30
 
 struct QNode {
 	struct msg message;
@@ -17,7 +17,8 @@ struct Queue {
 
 enum WaitingMode {
 	WAIT_FOR_MSG, // wait for message from layer 5 (app layer)
-	WAIT_FOR_ACK  // wait for acknowledge packet from layer 3 (transport layer)
+	WAIT_FOR_ACK, // wait for acknowledge packet from layer 3 (transport layer)
+	WAIT_FOR_PKT  // wait for packet from layer 3 (more for B)
 };
 
 struct CurrentState {
@@ -31,6 +32,8 @@ struct CurrentState A_state, B_state; // this keeps track of A and B's waiting m
 struct pkt current_packet;            // this saves current packet in case we need to resend it
 
 extern int TraceLevel; // this global log level setting is defined in project2.h and used here
+
+void process_queued_messages();
 
 /**
  * For a given packet, this calculates its checksum.
