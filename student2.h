@@ -11,7 +11,8 @@ struct current_state A_state, B_state;
 struct pkt current_packet;
 
 enum sender_mode {
-	WAITING_FOR_PKT, WAITING_FOR_ACK
+	WAIT_FOR_MSG, // wait for message from app (layer 5)
+	WAIT_FOR_ACK  // wait for acknowledge packet from layer 3
 };
 
 struct current_state {
@@ -28,6 +29,5 @@ int calculateChecksum(int seqnum, int acknum, const char* vdata);
 void a_send_message(int seqnum, int acknum, struct msg message);
 void debug_log(char *function_name, char *log_message);
 
-struct pkt make_pkt_msg(struct msg message, int seqNum, int ackNum);
-struct pkt make_pkt_data(const char data[MESSAGE_LENGTH], int seqNum, int ackNum);
+struct pkt make_pkt(const char data[MESSAGE_LENGTH], int seqNum, int ackNum);
 void writeLog(FILE *fp, int AorB, char *msg, const struct pkt *p, struct msg *m, float time);
