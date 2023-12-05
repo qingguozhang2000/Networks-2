@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "project2.h"
+#include "utilities.h"
  
 /* ***************************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -28,38 +29,24 @@
  * All these routines are in layer 4.
  */
 
-int calculateChecksum(char* vdata, int acknum, int seqnum);
-int calculateChecksumForResponse(int acknum, int seqnum);
 
-struct pkt* message_to_packet(struct msg *p_message) {
-    struct pkt* new_packet = (struct pkt*) malloc(sizeof(struct pkt));
+/* The following routine will be called once (only) before any other    */
+/* entity A routines are called. You can use it to do any initialization */
+void A_init() {
+    head = (struct msgQueue*) malloc(sizeof(struct msgQueue));
+    pktBufferHead = (struct pktQueue*) malloc(sizeof(struct pktQueue));
 
-
-    new_packet->seqnum = 0;
-    new_packet->acknum = 0;
-    int new_checksum = calculateChecksum(p_message->data, new_packet->acknum, new_packet->seqnum);
-    new_packet->checksum = new_checksum;
-    // new_packet->checksum = 0;
-    // printf("Ok until here.(now)\n");
-
-
-    memcpy(new_packet->payload, p_message->data, 20 * sizeof(char));
-    // printf("Message: %s, Packet data: %s\n", , supposed_checksum);
-
-
-    return new_packet;
+    seq_num = 0;
+    ack_num = 0;
 }
 
 
-struct msg* packet_to_message(struct pkt *p_packet) {
-    struct msg* new_message = (struct msg*) malloc(sizeof(struct msg));
+/*
+ * The following routine will be called once (only) before any other  
+ * entity B routines are called. You can use it to do any initialization
+ */
+void B_init() {
 
-    memcpy(new_message->data, p_packet->payload, 20 * sizeof(char));
-    printf("%s\n", new_message->data);
-    // printf("Ok until here.\n");
-
-
-    return new_message;
 }
 
 
@@ -70,12 +57,53 @@ struct msg* packet_to_message(struct pkt *p_packet) {
  * of your protocol to insure that the data in such a message is delivered
  * in-order, and correctly, to the receiving side upper layer.
  */
+// Outer layer calls this function in order to send packet
 void A_output(struct msg message) {
-    // printf("A_output0\n");
+    // Allocate memory and make our packet
     struct pkt *packet =(struct pkt*) malloc(sizeof(struct pkt));
-    packet = message_to_packet(&message);
-    // printf("A_output1\n");
+    packet = message_to_packet(&message, seq_num, 0);
+    
+    // Send our packet
     tolayer3(AEntity, *packet);
+
+    // Start timer
+    startTimer(AEntity, TIMER_TIME);
+
+    // Log this packet as the last packet sent
+    copyPacket(*last_packet, *packet);
+    // Log the message as the last message sent
+    copyMessage(*last_message, message);
+}
+
+
+/*
+ * B_input(packet),where packet is a structure of type pkt. This routine
+ * will be called whenever a packet sent from the A-side (i.e., as a result
+ * of a tolayer3() being done by a A-side procedure) arrives at the B-side.
+ * packet is the (possibly corrupted) packet sent from the A-side.
+ */
+void B_input(struct pkt packet) {
+    struct msg *message = (struct msg*) malloc(sizeof(struct msg));
+    message = packet_to_message(&packet);
+
+    // // Checks to see if the packet was corrupted
+    int notcorrupt = packetNotCorrupt(&packet);
+    // printf("Packet checksum: %d, Supposed checksum: %d\n", packet.checksum, supposed_checksum);
+    
+    // If the packet is the right sequence and the right checksum
+    if (notcorrupt) {
+        // Pass on the message to Layer 5
+        tolayer5(BEntity, *message);
+
+        // Declare our ACK packet
+        struct pkt *respondPkt;
+        // Make our ACK packet
+        int respond_checksum = calculateChecksumForResponse(0, packet.seqnum);
+        respondPkt = make_packet(NULL, 0, packet.seqnum, respond_checksum);
+
+        // Send the ACK message
+        tolayer3(BEntity, *respondPkt);
+    }
 }
 
 
@@ -86,9 +114,26 @@ void A_output(struct msg message) {
  * packet is the (possibly corrupted) packet sent from the B-side.
  */
 void A_input(struct pkt packet) {
-    // struct msg *message =(struct msg*) malloc(sizeof(struct msg));
-    // message = packet_to_message(&packet);
-    // tolayer5(AEntity, *message);
+    // Extract our message
+    struct msg *message = (struct msg*) malloc(sizeof(struct msg));
+    message = packet_to_message(&packet);
+
+    // Checks to see if the packet was corrupted
+    int notcorrupt = packetNotCorrupt(&packet);
+    // Checks if the acknum of the ACK packet is the same as the current seqnum
+    int correct_packet = isCorrectPacket(&packet);
+    
+    // If the packet is the right sequence and the right checksum
+    if (notcorrupt && correct_packet) {
+        // Toggle our seq and ack numbers
+        toggle_0_1(&seq_num);
+        toggle_0_1(&ack_num);
+        // Stop our timer
+        stopTimer(AEntity);
+    } else {
+        // Send the last message again
+        A_output(*last_message);
+    }
 }
 
 
@@ -99,15 +144,9 @@ void A_input(struct pkt packet) {
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void A_timerinterrupt() {
-    
+    sendLastPacket();
 }  
 
-
-/* The following routine will be called once (only) before any other    */
-/* entity A routines are called. You can use it to do any initialization */
-void A_init() {
-    
-}
 
 /*
  * Note that with simplex transfer from A-to-B, there is no routine  B_output()
@@ -124,78 +163,11 @@ void B_output(struct msg message)  {
 
 
 /*
- * B_input(packet),where packet is a structure of type pkt. This routine
- * will be called whenever a packet sent from the A-side (i.e., as a result
- * of a tolayer3() being done by a A-side procedure) arrives at the B-side.
- * packet is the (possibly corrupted) packet sent from the A-side.
- */
-void B_input(struct pkt packet) {
-    struct pkt *respondPkt;
-    struct msg *message = (struct msg*) malloc(sizeof(struct msg));
-    message = packet_to_message(&packet);
-
-    // // Checks to see if the checksum is good
-    // int checksum_good = 0;
-    int supposed_checksum = calculateChecksum(packet.payload, packet.acknum, packet.seqnum);
-    printf("Packet checksum: %d, Supposed checksum: %d\n", packet.checksum, supposed_checksum);
-    
-    // If the packet is corrupted
-    // while (packet.checksum != supposed_checksum) {
-
-    // }
-    if (packet.checksum == supposed_checksum) {
-        tolayer5(BEntity, *message);
-        // sendACK(BEntity);
-        respondPkt = (struct pkt*)malloc(sizeof(struct pkt));
-        respondPkt->seqnum = 0;
-        respondPkt->acknum = 0;//ACK
-        respondPkt->checksum = calculateChecksumForResponse(respondPkt->acknum, respondPkt->seqnum);
-        tolayer3(BEntity, *respondPkt);
-
-    }
-}
-
-
-/*
  * B_timerinterrupt()  This routine will be called when B's timer expires
  * (thus generating a timer interrupt). You'll probably want to use this
  * routine to control the retransmission of packets. See starttimer()
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void  B_timerinterrupt() {
-}
-
-
-/*
- * The following routine will be called once (only) before any other  
- * entity B routines are called. You can use it to do any initialization
- */
-void B_init() {
-}
-
-
-//calculate checksum; this function comes from internet
-int calculateChecksum(char* vdata, int acknum, int seqnum) {
-    // printf("Ok until here.\n");
-    int i, checksum = 0;
-    // printf("Ok until here.\n");
-
-
-    for(i = 0; i < MESSAGE_LENGTH; i++){
-        checksum += (int)(vdata[i]) * i;
-    }
-    // printf("Ok until here.\n");
-
-
-    checksum += acknum * 21;
-    checksum += seqnum * 22;
-    printf("Ok until here.(now)\n");
-
-
-    return checksum;
-}
-
-//calculate checksum for respond packet
-int calculateChecksumForResponse(int acknum, int seqnum){
-    return acknum + seqnum * 2;
+    sendLastPacket();
 }
