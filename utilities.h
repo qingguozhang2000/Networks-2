@@ -22,14 +22,17 @@ struct pktQueue {
     struct pktQueue *next;
 };
 
-int seq_num;
-int ack_num;
+#ifndef RDT_VALUES
+#define RDT_VALUES
 
-struct msgQueue *head;
-struct pktQueue *pktBufferHead;
+extern int seq_num;
+extern int ack_num;
+extern struct msgQueue *head;
+extern struct pktQueue *pktBufferHead;
+extern struct msg *last_message;
+extern struct pkt *last_packet;
 
-struct msg *last_message;
-struct pkt *last_packet;
+#endif
 
 struct message_state {
     int state;

@@ -3,6 +3,15 @@
 #include <string.h>
 #include "project2.h"
 #include "utilities.h"
+
+int seq_num;
+int ack_num;
+
+struct msgQueue *head;
+struct pktQueue *pktBufferHead;
+
+struct msg *last_message;
+struct pkt *last_packet;
  
 /* ***************************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
