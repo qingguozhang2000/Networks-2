@@ -4,15 +4,6 @@
 #include "project2.h"
 #include "utilities.h"
 
-int seq_num;
-int ack_num;
-
-struct msgQueue *head;
-struct pktQueue *pktBufferHead;
-
-struct msg *last_message;
-struct pkt *last_packet;
-
 struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum) {
     struct pkt* new_packet = (struct pkt*) malloc(sizeof(struct pkt));
 
