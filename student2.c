@@ -12,15 +12,6 @@ struct pktQueue *pktBufferHead;
 
 struct msg *last_message;
 struct pkt *last_packet;
- 
-int seq_num;
-int ack_num;
-
-struct msgQueue *head;
-struct pktQueue *pktBufferHead;
-
-struct msg last_message;
-struct pkt last_packet;
 
 /* ***************************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -51,11 +42,14 @@ struct pkt last_packet;
 /* The following routine will be called once (only) before any other    */
 /* entity A routines are called. You can use it to do any initialization */
 void A_init() {
-    head = (struct msgQueue*) malloc(sizeof(struct msgQueue));
-    pktBufferHead = (struct pktQueue*) malloc(sizeof(struct pktQueue));
-
     seq_num = 0;
     ack_num = 0;
+
+    head = (struct msgQueue*) malloc(sizeof(struct msgQueue));
+    pktBufferHead = (struct pktQueue*) malloc(sizeof(struct pktQueue));
+    
+    last_message = (struct msg*) malloc(sizeof(struct msg));
+    last_packet = (struct pkt*) malloc(sizeof(struct pkt));
 }
 
 
@@ -88,9 +82,9 @@ void A_output(struct msg message) {
     startTimer(AEntity, TIMER_TIME);
 
     // Log this packet as the last packet sent
-    copyPacket(last_packet, *packet);
+    copyPacket(*last_packet, *packet); // Segmentation Fault
     // Log the message as the last message sent
-    copyMessage(last_message, message);
+    copyMessage(*last_message, message);
 }
 
 
@@ -132,8 +126,8 @@ void B_input(struct pkt packet) {
  * packet is the (possibly corrupted) packet sent from the B-side.
  */
 void A_input(struct pkt packet) {
-    // Extract our message
-    struct msg *message = packet_to_message(&packet);
+    // // Extract our message
+    // struct msg *message = packet_to_message(&packet);
 
     // Checks to see if the packet was corrupted
     int notcorrupt = packetNotCorrupt(&packet);
@@ -149,7 +143,8 @@ void A_input(struct pkt packet) {
         stopTimer(AEntity);
     } else {
         // Send the last message again
-        A_output(last_message);
+        printf("Message sent!\n");
+        A_output(*last_message);
     }
 }
 
