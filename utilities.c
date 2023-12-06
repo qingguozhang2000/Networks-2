@@ -4,6 +4,10 @@
 #include "project2.h"
 #include "utilities.h"
 
+extern int seq_num;
+extern struct pkt *last_packet;
+
+
 struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum) {
     struct pkt* new_packet = (struct pkt*) malloc(sizeof(struct pkt));
 

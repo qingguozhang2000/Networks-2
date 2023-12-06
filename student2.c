@@ -4,6 +4,15 @@
 #include "project2.h"
 #include "utilities.h"
  
+int seq_num;
+int ack_num;
+
+struct msgQueue *head;
+struct pktQueue *pktBufferHead;
+
+struct msg last_message;
+struct pkt last_packet;
+
 /* ***************************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
 
@@ -70,9 +79,9 @@ void A_output(struct msg message) {
     startTimer(AEntity, TIMER_TIME);
 
     // Log this packet as the last packet sent
-    copyPacket(*last_packet, *packet);
+    copyPacket(last_packet, *packet);
     // Log the message as the last message sent
-    copyMessage(*last_message, message);
+    copyMessage(last_message, message);
 }
 
 
@@ -99,7 +108,7 @@ void B_input(struct pkt packet) {
         struct pkt *respondPkt;
         // Make our ACK packet
         int respond_checksum = calculateChecksumForResponse(0, packet.seqnum);
-        respondPkt = make_packet(NULL, 0, packet.seqnum, respond_checksum);
+        respondPkt = make_packet(message, 0, packet.seqnum, respond_checksum);
 
         // Send the ACK message
         tolayer3(BEntity, *respondPkt);
@@ -115,8 +124,7 @@ void B_input(struct pkt packet) {
  */
 void A_input(struct pkt packet) {
     // Extract our message
-    struct msg *message = (struct msg*) malloc(sizeof(struct msg));
-    message = packet_to_message(&packet);
+    struct msg *message = packet_to_message(&packet);
 
     // Checks to see if the packet was corrupted
     int notcorrupt = packetNotCorrupt(&packet);
@@ -132,7 +140,7 @@ void A_input(struct pkt packet) {
         stopTimer(AEntity);
     } else {
         // Send the last message again
-        A_output(*last_message);
+        A_output(last_message);
     }
 }
 

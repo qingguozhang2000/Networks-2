@@ -22,15 +22,6 @@ struct pktQueue {
     struct pktQueue *next;
 };
 
-int seq_num;
-int ack_num;
-
-struct msgQueue *head;
-struct pktQueue *pktBufferHead;
-
-struct msg *last_message;
-struct pkt *last_packet;
-
 struct message_state {
     int state;
 };
