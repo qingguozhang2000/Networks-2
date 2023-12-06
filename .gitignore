@@ -2,7 +2,5 @@
 *.dSYM
 .vscode
 .DS_Store
-p2
-args.txt
-results.txt
 queue
+rdt3

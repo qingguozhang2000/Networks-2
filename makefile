@@ -1,10 +1,7 @@
-all: p2 queue
+all: rdt3
 
-p2: project2.c student2.c
-	gcc -g project2.c student2.c -o p2
-
-queue: queue.c queue-test.c
-	gcc -g queue.c queue-test.c -o queue
+rdt3: project2.c student2.c util.c
+	gcc -g project2.c student2.c util.c -o rdt3
 
 clean:
-	rm p2 queue
+	rm rdt3
