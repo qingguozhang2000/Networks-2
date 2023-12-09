@@ -33,6 +33,32 @@ struct msg* packet_to_message(struct pkt *p_packet) {
     return new_message;
 }
 
+struct msg message_pop(struct msgQueue* messages) {
+    // Check to see if this queue node is the last node
+    if (messages->next == NULL) {
+        // Copy our message
+        struct msg pop_message = messages->waitingMessage;
+        // Message is gone
+        messages = NULL;
+        // Return our message
+        return pop_message;
+    } else {
+        // Recurse to the next node
+        return message_pop(messages->next);
+    }
+}
+
+void message_push(struct msgQueue* messages, struct msg message) {
+    // Get the old messages
+    struct msgQueue* p_old_queue = (struct msgQueue*) malloc(sizeof(struct msgQueue));
+    memcpy(p_old_queue, messages, sizeof(struct msgQueue));
+
+    // Replace the message in our queue with the new message
+    messages->waitingMessage = message;
+    // Put our old message queue into the chain
+    messages->next = p_old_queue;
+}
+
 void copyPacket(struct pkt endP, struct pkt initP) {
     endP.acknum = initP.acknum;
     endP.acknum = initP.acknum;
@@ -82,6 +108,23 @@ int packetNotCorrupt(struct pkt* test_packet) {
 
     int wanted_sum = test_packet->checksum;
     int current_sum = calculateChecksum(test_packet->payload, test_packet->seqnum, test_packet->acknum);
+    printf("**Wanted sum: %d, Actual sum: %d\n", wanted_sum, current_sum);
+
+    if (wanted_sum == current_sum) {
+        not_corrupted = TRUE;
+    } else {
+        not_corrupted = FALSE;
+    }
+
+    return not_corrupted;
+}
+
+int responseNotCorrupt(struct pkt* test_packet) {
+    int not_corrupted;
+
+    int wanted_sum = test_packet->checksum;
+    int current_sum = calculateChecksumForResponse(test_packet->seqnum, test_packet->acknum);
+    printf("**Wanted sum: %d, Actual sum: %d\n", wanted_sum, current_sum);
 
     if (wanted_sum == current_sum) {
         not_corrupted = TRUE;

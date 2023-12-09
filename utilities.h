@@ -34,13 +34,13 @@ extern struct pkt *last_packet;
 
 #endif
 
-struct message_state {
-    int state;
-};
-
 struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum);
 
 struct msg* packet_to_message(struct pkt *p_packet);
+
+struct msg message_pop(struct msgQueue* messages);
+
+void message_push(struct msgQueue* messages, struct msg message);
 
 void copyPacket(struct pkt endP, struct pkt initP);
 
@@ -53,6 +53,8 @@ int calculateChecksum(char* vdata, int acknum, int seqnum);
 struct pkt* make_packet(char payload[20], int seqnum, int acknum, int checksum);
 
 int packetNotCorrupt(struct pkt* test_packet);
+
+int responseNotCorrupt(struct pkt* test_packet);
 
 int isCorrectPacket(struct pkt* packet);
 

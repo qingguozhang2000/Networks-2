@@ -1,0 +1,11 @@
+/home/rezhang/Networks/proj2/msg_data.txt
+  9,1: **A initialized
+  11,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 0
+  201,1: **RECEIVED A NEW MESSAGE
+  203,1: **Wanted sum: 0, Actual sum: 0
+  226,1: **RECEIVE ACK
+  227,1: **Wanted sum: 0, Actual sum: 0
+  228,1: **Not corrupt? 1, Correct packet? 1
+  229,1: **Should not be corrupt!
+  230,1: **Old numbers: 0, 0
+  231,1: **New numbers: 1, 1
