@@ -10,7 +10,7 @@ int ack_num;
 struct msgQueue *messages;
 struct pktQueue *pktBufferHead;
 
-struct msg *last_message;
+struct msg last_message;
 struct pkt *last_packet;
 
 int message_state;
@@ -53,7 +53,7 @@ void A_init() {
     messages = (struct msgQueue*) malloc(sizeof(struct msgQueue));
     pktBufferHead = (struct pktQueue*) malloc(sizeof(struct pktQueue));
     
-    last_message = (struct msg*) malloc(sizeof(struct msg));
+    // last_message = (struct msg*) malloc(sizeof(struct msg));
     last_packet = (struct pkt*) malloc(sizeof(struct pkt));
 }
 
@@ -76,17 +76,13 @@ void B_init() {
  */
 // Outer layer calls this function in order to send packet
 void A_output(struct msg message) {
-    // Put the next message into the queue
-    message_push(messages, message);
-
     // If ready to send the next message
     if (message_state == SEND_MESSAGE) {
-        // Find the first message that came in and pop it out
-        struct msg next_message = message_pop(messages);
         // Allocate memory and make our packet
         struct pkt *packet =(struct pkt*) malloc(sizeof(struct pkt));
-        packet = message_to_packet(&next_message, seq_num, 0);
-        printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(&next_message, seq_num, 0));
+        packet = message_to_packet(&message, seq_num, 0);
+        printf("**\n");
+        printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(&message, seq_num, 0));
         
         // Send our packet
         tolayer3(AEntity, *packet);
@@ -97,8 +93,12 @@ void A_output(struct msg message) {
         // Log this packet as the last packet sent
         copyPacket(*last_packet, *packet);
         // Log the message as the last message sent
-        copyMessage(*last_message, next_message);
+        copyMessage(&last_message, &message);
+        printf("**Current message: %s, Last message: %s\n", message.data, last_message.data);
         message_state = WAIT_FOR_ACK;
+    } else if (message_state == WAIT_FOR_ACK) {
+        // Put the next message into the queue
+        message_push(messages, message);
     }
 }
 
@@ -163,11 +163,17 @@ void A_input(struct pkt packet) {
         // Stop our timer
         stopTimer(AEntity);
         message_state = SEND_MESSAGE;
+
+        // Send the next message
+        printf("**OUR MESSAGE QUEUE:\n");
+        struct msg next_message = message_pop(messages);
+        printf("\n");
+        A_output(next_message);
     } else {
         // Send the last message again
         printf("**Last message sent!\n");
         message_state = SEND_MESSAGE;
-        A_output(*last_message);
+        A_output(last_message);
     }
 }
 

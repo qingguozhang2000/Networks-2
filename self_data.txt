@@ -1,11 +1,126 @@
 /home/rezhang/Networks/proj2/msg_data.txt
   9,1: **A initialized
-  11,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 0
-  201,1: **RECEIVED A NEW MESSAGE
+  11,1: **
+  12,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 14940
+  13,1: **Current message: !fEVhy->Pbs'2J3m~2DU�, Last message: !fEVhy->Pbs'2J3m~2DU
+  43,1: **RECEIVED A NEW MESSAGE
+  45,1: **Wanted sum: 14940, Actual sum: 14940
+  47,1: **RECEIVE ACK
+  48,1: **Wanted sum: 0, Actual sum: 0
+  49,1: **Not corrupt? 1, Correct packet? 1
+  50,1: **Should not be corrupt!
+  51,1: **Old numbers: 0, 0
+  52,1: **New numbers: 1, 1
+  53,1: **OUR MESSAGE QUEUE:
+  54,1: **d{iVD1|jWE2}2X03~lYGz, 
+  55,1: **
+  56,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15792
+  57,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  58,1: **RECEIVED A NEW MESSAGE
+  60,1: **Wanted sum: 15792, Actual sum: 15792
+  67,1: **RECEIVE ACK
+  68,1: **Wanted sum: 1, Actual sum: 1
+  69,1: **Not corrupt? 1, Correct packet? 1
+  70,1: **Should not be corrupt!
+  71,1: **Old numbers: 1, 1
+  72,1: **New numbers: 0, 0
+  73,1: **OUR MESSAGE QUEUE:
+  74,1: **d{iVD1|jWE2}2X03~lYGz, 
+  75,1: **
+  76,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15770
+  77,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  82,1: **RECEIVED A NEW MESSAGE
+  84,1: **Wanted sum: 15770, Actual sum: 15770
+  87,1: **RECEIVE ACK
+  88,1: **Wanted sum: 0, Actual sum: 0
+  89,1: **Not corrupt? 1, Correct packet? 1
+  90,1: **Should not be corrupt!
+  91,1: **Old numbers: 0, 0
+  92,1: **New numbers: 1, 1
+  93,1: **OUR MESSAGE QUEUE:
+  94,1: **d{iVD1|jWE2}2X03~lYGz, 
+  95,1: **
+  96,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15792
+  97,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  98,1: **RECEIVED A NEW MESSAGE
+  100,1: **Wanted sum: 15792, Actual sum: 15792
+  103,1: **RECEIVE ACK
+  104,1: **Wanted sum: 1, Actual sum: 1
+  105,1: **Not corrupt? 1, Correct packet? 1
+  106,1: **Should not be corrupt!
+  107,1: **Old numbers: 1, 1
+  108,1: **New numbers: 0, 0
+  109,1: **OUR MESSAGE QUEUE:
+  110,1: **d{iVD1|jWE2}2X03~lYGz, 
+  111,1: **
+  112,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15770
+  113,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  114,1: **RECEIVED A NEW MESSAGE
+  116,1: **Wanted sum: 15770, Actual sum: 15770
+  123,1: **RECEIVE ACK
+  124,1: **Wanted sum: 0, Actual sum: 0
+  125,1: **Not corrupt? 1, Correct packet? 1
+  126,1: **Should not be corrupt!
+  127,1: **Old numbers: 0, 0
+  128,1: **New numbers: 1, 1
+  129,1: **OUR MESSAGE QUEUE:
+  130,1: **d{iVD1|jWE2}2X03~lYGz, 
+  131,1: **
+  132,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15792
+  133,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  138,1: **RECEIVED A NEW MESSAGE
+  140,1: **Wanted sum: 15792, Actual sum: 15792
+  143,1: **RECEIVE ACK
+  144,1: **Wanted sum: 1, Actual sum: 1
+  145,1: **Not corrupt? 1, Correct packet? 1
+  146,1: **Should not be corrupt!
+  147,1: **Old numbers: 1, 1
+  148,1: **New numbers: 0, 0
+  149,1: **OUR MESSAGE QUEUE:
+  150,1: **d{iVD1|jWE2}2X03~lYGz, 
+  151,1: **
+  152,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15770
+  153,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  154,1: **RECEIVED A NEW MESSAGE
+  156,1: **Wanted sum: 15770, Actual sum: 15856
+  157,1: **RECEIVED A NEW MESSAGE
+  159,1: **Wanted sum: 0, Actual sum: 0
+  162,1: **RECEIVE ACK
+  163,1: **Wanted sum: 0, Actual sum: 0
+  164,1: **Not corrupt? 1, Correct packet? 1
+  165,1: **Should not be corrupt!
+  166,1: **Old numbers: 0, 0
+  167,1: **New numbers: 1, 1
+  168,1: **OUR MESSAGE QUEUE:
+  169,1: **d{iVD1|jWE2}2X03~lYGz, 
+  170,1: **
+  171,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15792
+  172,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  173,1: **RECEIVED A NEW MESSAGE
+  175,1: **Wanted sum: 15792, Actual sum: 15792
+  182,1: **RECEIVE ACK
+  183,1: **Wanted sum: 1, Actual sum: 1
+  184,1: **Not corrupt? 1, Correct packet? 1
+  185,1: **Should not be corrupt!
+  186,1: **Old numbers: 1, 1
+  187,1: **New numbers: 0, 0
+  188,1: **OUR MESSAGE QUEUE:
+  189,1: **d{iVD1|jWE2}2X03~lYGz, 
+  190,1: **
+  191,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15770
+  192,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  197,1: **RECEIVED A NEW MESSAGE
+  199,1: **Wanted sum: 15770, Actual sum: 15770
+  202,1: **RECEIVE ACK
   203,1: **Wanted sum: 0, Actual sum: 0
-  226,1: **RECEIVE ACK
-  227,1: **Wanted sum: 0, Actual sum: 0
-  228,1: **Not corrupt? 1, Correct packet? 1
-  229,1: **Should not be corrupt!
-  230,1: **Old numbers: 0, 0
-  231,1: **New numbers: 1, 1
+  204,1: **Not corrupt? 1, Correct packet? 1
+  205,1: **Should not be corrupt!
+  206,1: **Old numbers: 0, 0
+  207,1: **New numbers: 1, 1
+  208,1: **OUR MESSAGE QUEUE:
+  209,1: **d{iVD1|jWE2}2X03~lYGz, 
+  210,1: **
+  211,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15792
+  212,1: **Current message: d{iVD1|jWE2}2X03~lYG, Last message: d{iVD1|jWE2}2X03~lYG
+  213,1: **RECEIVED A NEW MESSAGE
+  215,1: **Wanted sum: 15792, Actual sum: 15792

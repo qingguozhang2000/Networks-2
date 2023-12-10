@@ -34,18 +34,34 @@ struct msg* packet_to_message(struct pkt *p_packet) {
 }
 
 struct msg message_pop(struct msgQueue* messages) {
-    // Check to see if this queue node is the last node
-    if (messages->next == NULL) {
-        // Copy our message
-        struct msg pop_message = messages->waitingMessage;
-        // Message is gone
-        messages = NULL;
-        // Return our message
-        return pop_message;
+    printf("**%s, ", messages->waitingMessage);
+    // Copy our message
+    struct msg pop_message;
+    if (strlen(messages->waitingMessage.data) == 20) {
+        copyMessage(&pop_message, &messages->waitingMessage);
     } else {
-        // Recurse to the next node
-        return message_pop(messages->next);
+        strcpy(pop_message.data, "");
     }
+
+    // Pop the top off
+    messages = messages->next;
+
+    // Return our message
+    return pop_message;
+
+    // // Check to see if this queue node is the last node
+    // if (messages->next == NULL) {
+    //     // Copy our message
+    //     struct msg pop_message;
+    //     copyMessage(&pop_message, &messages->waitingMessage);
+    //     // Message is gone
+    //     messages = NULL;
+    //     // Return our message
+    //     return pop_message;
+    // } else {
+    //     // Recurse to the next node
+    //     return message_pop(messages->next);
+    // }
 }
 
 void message_push(struct msgQueue* messages, struct msg message) {
@@ -65,8 +81,8 @@ void copyPacket(struct pkt endP, struct pkt initP) {
     memcpy(endP.payload, initP.payload, MESSAGE_LENGTH);
 }
 
-void copyMessage(struct msg endM, struct msg initM) {
-    memcpy(endM.data, initM.data, MESSAGE_LENGTH);
+void copyMessage(struct msg* endM, struct msg *initM) {
+    memcpy(endM->data, initM->data, MESSAGE_LENGTH);
 }
 
 void sendLastPacket() {

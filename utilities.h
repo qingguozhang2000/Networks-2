@@ -29,7 +29,7 @@ extern int seq_num;
 extern int ack_num;
 extern struct msgQueue *head;
 extern struct pktQueue *pktBufferHead;
-extern struct msg *last_message;
+extern struct msg last_message;
 extern struct pkt *last_packet;
 
 #endif
@@ -44,7 +44,7 @@ void message_push(struct msgQueue* messages, struct msg message);
 
 void copyPacket(struct pkt endP, struct pkt initP);
 
-void copyMessage(struct msg endM, struct msg initM);
+void copyMessage(struct msg* endM, struct msg *initM);
 
 void sendLastPacket();
 
