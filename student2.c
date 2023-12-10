@@ -169,12 +169,18 @@ void A_input(struct pkt packet) {
         struct msg next_message = message_pop(messages);
         printf("\n");
         A_output(next_message);
-    } else {
-        // Send the last message again
-        printf("**Last message sent!\n");
-        message_state = SEND_MESSAGE;
-        A_output(last_message);
     }
+    else if (!correct_packet)
+	{
+		debug_log("A_input", "A gets a NACK from B; so A stops the timer, resends the packet, and starts the timer");
+		stopTimer(AEntity);
+		tolayer3(AEntity, *last_packet);
+		startTimer(AEntity, TIMER_TIME);
+	}
+	else if (!notcorrupt)
+	{
+		debug_log("A_input", "ACK corrupted, do nothing and wait for timeout");
+	}
 }
 
 
