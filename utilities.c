@@ -83,7 +83,7 @@ struct msg dequeue_msg(struct msgQueue* messages) {
 }
 
 struct msg message_pop(struct msgQueue* messages) {
-    printf("**%s, ", messages->waitingMessage);
+    printf("**%s, ", messages->waitingMessage.data);
     // Copy our message
     struct msg pop_message;
     if (strlen(messages->waitingMessage.data) == 20) {

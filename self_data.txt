@@ -5,113 +5,121 @@
   13,1: **Current message: !fEVhy->Pbs'2J3m~2DU�, Last message: !fEVhy->Pbs'2J3m~2DU
   43,1: **RECEIVED A NEW MESSAGE
   45,1: **Wanted sum: 14940, Actual sum: 14940
-  47,1: **RECEIVE ACK
-  48,1: **Wanted sum: 0, Actual sum: 0
-  49,1: **Not corrupt? 1, Correct packet? 1
-  50,1: **Should not be corrupt!
-  51,1: **Old numbers: 0, 0
-  52,1: **New numbers: 1, 1
-  53,1: **OUR MESSAGE QUEUE:
-  55,1: **
-  56,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15912
-  57,1: **Current message: $X$d:oFzQ(]3h>sJ~U,a, Last message: $X$d:oFzQ(]3h>sJ~U,a
-  58,1: **RECEIVED A NEW MESSAGE
-  60,1: **Wanted sum: 15912, Actual sum: 15912
-  67,1: **RECEIVE ACK
-  68,1: **Wanted sum: 1, Actual sum: 1
-  69,1: **Not corrupt? 1, Correct packet? 1
-  70,1: **Should not be corrupt!
-  71,1: **Old numbers: 1, 1
-  72,1: **New numbers: 0, 0
-  73,1: **OUR MESSAGE QUEUE:
-  75,1: **
-  76,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 14560
-  77,1: **Current message: %kS%$jR:#iQ9!hP8~gO7, Last message: %kS%$jR:#iQ9!hP8~gO7
-  82,1: **RECEIVED A NEW MESSAGE
-  84,1: **Wanted sum: 14560, Actual sum: 14560
-  87,1: **RECEIVE ACK
-  88,1: **Wanted sum: 0, Actual sum: 0
-  89,1: **Not corrupt? 1, Correct packet? 1
-  90,1: **Should not be corrupt!
-  91,1: **Old numbers: 0, 0
-  92,1: **New numbers: 1, 1
-  93,1: **OUR MESSAGE QUEUE:
-  95,1: **
-  96,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 16022
-  97,1: **Current message: &}wq&e_XRLF?93-'~xrl, Last message: &}wq&e_XRLF?93-'~xrl
-  98,1: **RECEIVED A NEW MESSAGE
-  100,1: **Wanted sum: 16022, Actual sum: 16022
-  103,1: **RECEIVE ACK
-  104,1: **Wanted sum: 1, Actual sum: 1
-  105,1: **Not corrupt? 1, Correct packet? 1
-  106,1: **Should not be corrupt!
-  107,1: **Old numbers: 1, 1
-  108,1: **New numbers: 0, 0
-  109,1: **OUR MESSAGE QUEUE:
-  111,1: **
-  112,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15497
-  113,1: **Current message: '2=IT'kv$x:FQ]hs~,7C, Last message: '2=IT'kv$x:FQ]hs~,7C
-  114,1: **RECEIVED A NEW MESSAGE
-  116,1: **Wanted sum: 15497, Actual sum: 15497
-  123,1: **RECEIVE ACK
-  124,1: **Wanted sum: 0, Actual sum: 0
-  125,1: **Not corrupt? 1, Correct packet? 1
-  126,1: **Should not be corrupt!
-  127,1: **Old numbers: 0, 0
-  128,1: **New numbers: 1, 1
-  129,1: **OUR MESSAGE QUEUE:
-  131,1: **
-  132,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 16835
-  133,1: **Current message: (Eb~=Z(6SpxLi(Eb~=Zw, Last message: (Eb~=Z(6SpxLi(Eb~=Zw
-  138,1: **RECEIVED A NEW MESSAGE
-  140,1: **Wanted sum: 16835, Actual sum: 16835
-  143,1: **RECEIVE ACK
-  144,1: **Wanted sum: 1, Actual sum: 1
-  145,1: **Not corrupt? 1, Correct packet? 1
-  146,1: **Should not be corrupt!
-  147,1: **Old numbers: 1, 1
-  148,1: **New numbers: 0, 0
-  149,1: **OUR MESSAGE QUEUE:
-  151,1: **
-  152,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 14232
-  153,1: **Current message: dW(V'U&)%S$R2Q!P~O}N, Last message: dW(V'U&)%S$R2Q!P~O}N
-  154,1: **RECEIVED A NEW MESSAGE
-  156,1: **Wanted sum: 14232, Actual sum: 14246
-  157,1: **RECEIVED A NEW MESSAGE
-  159,1: **Wanted sum: 0, Actual sum: 0
-  162,1: **RECEIVE ACK
-  163,1: **Wanted sum: 0, Actual sum: 0
-  164,1: **Not corrupt? 1, Correct packet? 1
-  165,1: **Should not be corrupt!
-  166,1: **Old numbers: 0, 0
-  167,1: **New numbers: 1, 1
-  168,1: **OUR MESSAGE QUEUE:
-  170,1: **
-  171,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15414
-  172,1: **Current message: *jL.nP2r*6vX:z]>~aC%, Last message: *jL.nP2r*6vX:z]>~aC%
-  173,1: **RECEIVED A NEW MESSAGE
-  175,1: **Wanted sum: 15414, Actual sum: 15414
-  182,1: **RECEIVE ACK
-  183,1: **Wanted sum: 1, Actual sum: 1
-  184,1: **Not corrupt? 1, Correct packet? 1
-  185,1: **Should not be corrupt!
-  186,1: **Old numbers: 1, 1
-  187,1: **New numbers: 0, 0
-  188,1: **OUR MESSAGE QUEUE:
-  190,1: **
-  191,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15641
-  192,1: **Current message: +fpdWK>2&+k_RF3-~rfY, Last message: +fpdWK>2&+k_RF3-~rfY
-  197,1: **RECEIVED A NEW MESSAGE
-  199,1: **Wanted sum: 15641, Actual sum: 15641
-  202,1: **RECEIVE ACK
-  203,1: **Wanted sum: 0, Actual sum: 0
-  204,1: **Not corrupt? 1, Correct packet? 1
-  205,1: **Should not be corrupt!
-  206,1: **Old numbers: 0, 0
-  207,1: **New numbers: 1, 1
-  208,1: **OUR MESSAGE QUEUE:
-  210,1: **
-  211,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15519
-  212,1: **Current message: ,16;AFKPUZ,ejoty~&+0, Last message: ,16;AFKPUZ,ejoty~&+0
-  213,1: **RECEIVED A NEW MESSAGE
-  215,1: **Wanted sum: 15519, Actual sum: 15519
+  47,1: **Expected string: !fEVhy->Pbs'2J3m~2DU
+  48,1: **RECEIVE ACK
+  49,1: **Wanted sum: 0, Actual sum: 0
+  50,1: **Not corrupt? 1, Correct packet? 1
+  51,1: **Should not be corrupt!
+  52,1: **Old numbers: 0, 0
+  53,1: **New numbers: 1, 1
+  54,1: **OUR MESSAGE QUEUE:
+  56,1: **
+  57,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15188
+  58,1: **Current message: ##i.Qt9]!Eh-Ps8[~Dg,, Last message: ##i.Qt9]!Eh-Ps8[~Dg,
+  59,1: **RECEIVED A NEW MESSAGE
+  61,1: **Wanted sum: 15188, Actual sum: 15188
+  63,1: **Expected string: ##i.Qt9]!Eh-Ps8[~Dg,
+  68,1: **RECEIVE ACK
+  69,1: **Wanted sum: 1, Actual sum: 1
+  70,1: **Not corrupt? 1, Correct packet? 1
+  71,1: **Should not be corrupt!
+  72,1: **Old numbers: 1, 1
+  73,1: **New numbers: 0, 0
+  74,1: **OUR MESSAGE QUEUE:
+  76,1: **
+  77,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15890
+  78,1: **Current message: $X$d:oFzQ(]3h>sJ~U,a, Last message: $X$d:oFzQ(]3h>sJ~U,a
+  83,1: **RECEIVED A NEW MESSAGE
+  85,1: **Wanted sum: 15890, Actual sum: 15890
+  87,1: **Expected string: $X$d:oFzQ(]3h>sJ~U,a
+  88,1: **RECEIVE ACK
+  89,1: **Wanted sum: 0, Actual sum: 0
+  90,1: **Not corrupt? 1, Correct packet? 1
+  91,1: **Should not be corrupt!
+  92,1: **Old numbers: 0, 0
+  93,1: **New numbers: 1, 1
+  94,1: **OUR MESSAGE QUEUE:
+  96,1: **
+  97,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 14582
+  98,1: **Current message: %kS%$jR:#iQ9!hP8~gO7, Last message: %kS%$jR:#iQ9!hP8~gO7
+  99,1: **RECEIVED A NEW MESSAGE
+  101,1: **Wanted sum: 14582, Actual sum: 14582
+  103,1: **Expected string: %kS%$jR:#iQ9!hP8~gO7
+  104,1: **RECEIVE ACK
+  105,1: **Wanted sum: 1, Actual sum: 1
+  106,1: **Not corrupt? 1, Correct packet? 1
+  107,1: **Should not be corrupt!
+  108,1: **Old numbers: 1, 1
+  109,1: **New numbers: 0, 0
+  110,1: **OUR MESSAGE QUEUE:
+  112,1: **
+  113,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 16000
+  114,1: **Current message: &}wq&e_XRLF?93-'~xrl, Last message: &}wq&e_XRLF?93-'~xrl
+  115,1: **RECEIVED A NEW MESSAGE
+  117,1: **Wanted sum: 16000, Actual sum: 16000
+  119,1: **Expected string: &}wq&e_XRLF?93-'~xrl
+  124,1: **RECEIVE ACK
+  125,1: **Wanted sum: 0, Actual sum: 0
+  126,1: **Not corrupt? 1, Correct packet? 1
+  127,1: **Should not be corrupt!
+  128,1: **Old numbers: 0, 0
+  129,1: **New numbers: 1, 1
+  130,1: **OUR MESSAGE QUEUE:
+  132,1: **
+  133,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15519
+  134,1: **Current message: '2=IT'kv$x:FQ]hs~,7C, Last message: '2=IT'kv$x:FQ]hs~,7C
+  139,1: **RECEIVED A NEW MESSAGE
+  141,1: **Wanted sum: 15519, Actual sum: 15519
+  143,1: **Expected string: '2=IT'kv$x:FQ]hs~,7C
+  144,1: **RECEIVE ACK
+  145,1: **Wanted sum: 1, Actual sum: 1
+  146,1: **Not corrupt? 1, Correct packet? 1
+  147,1: **Should not be corrupt!
+  148,1: **Old numbers: 1, 1
+  149,1: **New numbers: 0, 0
+  150,1: **OUR MESSAGE QUEUE:
+  152,1: **
+  153,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 16813
+  154,1: **Current message: (Eb~=Z(6SpxLi(Eb~=Zw, Last message: (Eb~=Z(6SpxLi(Eb~=Zw
+  155,1: **RECEIVED A NEW MESSAGE
+  157,1: **Wanted sum: 16813, Actual sum: 16813
+  159,1: **Expected string: (Eb~=Z(6SpxLi(Eb~=Zw
+  160,1: **RECEIVE ACK
+  161,1: **Wanted sum: 0, Actual sum: 0
+  162,1: **Not corrupt? 1, Correct packet? 1
+  163,1: **Should not be corrupt!
+  164,1: **Old numbers: 0, 0
+  165,1: **New numbers: 1, 1
+  166,1: **OUR MESSAGE QUEUE:
+  168,1: **
+  169,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 14254
+  170,1: **Current message: dW(V'U&)%S$R2Q!P~O}N, Last message: dW(V'U&)%S$R2Q!P~O}N
+  171,1: **RECEIVED A NEW MESSAGE
+  173,1: **Wanted sum: 14254, Actual sum: 14254
+  175,1: **Expected string: dW(V'U&)%S$R2Q!P~O}N
+  180,1: **RECEIVE ACK
+  181,1: **Wanted sum: 1, Actual sum: 1
+  182,1: **Not corrupt? 1, Correct packet? 1
+  183,1: **Should not be corrupt!
+  184,1: **Old numbers: 1, 1
+  185,1: **New numbers: 0, 0
+  186,1: **OUR MESSAGE QUEUE:
+  188,1: **
+  189,1: **INITIALIZED A NEW MESSAGE, seq_num: 0, checksum: 15392
+  190,1: **Current message: *jL.nP2r*6vX:z]>~aC%, Last message: *jL.nP2r*6vX:z]>~aC%
+  195,1: **RECEIVED A NEW MESSAGE
+  197,1: **Wanted sum: 15392, Actual sum: 15392
+  199,1: **Expected string: *jL.nP2r*6vX:z]>~aC%
+  200,1: **RECEIVE ACK
+  201,1: **Wanted sum: 0, Actual sum: 0
+  202,1: **Not corrupt? 1, Correct packet? 1
+  203,1: **Should not be corrupt!
+  204,1: **Old numbers: 0, 0
+  205,1: **New numbers: 1, 1
+  206,1: **OUR MESSAGE QUEUE:
+  208,1: **
+  209,1: **INITIALIZED A NEW MESSAGE, seq_num: 1, checksum: 15663
+  210,1: **Current message: +fpdWK>2&+k_RF3-~rfY, Last message: +fpdWK>2&+k_RF3-~rfY
+  211,1: **RECEIVED A NEW MESSAGE
+  213,1: **Wanted sum: 15663, Actual sum: 15663
+  215,1: **Expected string: +fpdWK>2&+k_RF3-~rfY

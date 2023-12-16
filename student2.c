@@ -84,7 +84,7 @@ void A_output(struct msg message) {
         struct pkt *packet = (struct pkt*) malloc(sizeof(struct pkt));
         packet = message_to_packet(&message, seq_num, 0);
         printf("**\n");
-        printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(&message, seq_num, 0));
+        printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(message.data, seq_num, 0));
         
         // Send our packet
         tolayer3(AEntity, *packet);
@@ -100,13 +100,14 @@ void A_output(struct msg message) {
         message_state = WAIT_FOR_ACK;
     } else if (message_state == WAIT_FOR_ACK) {
         // If it is the first message, start our struct
-        if (!first_message_sent) {
-            messages->waitingMessage = message;
-            first_message_sent = 1;
-        }
+        // if (!first_message_sent) {
+        //     messages->waitingMessage = message;
+        //     first_message_sent = 1;
+        // }
         // Put the next message into the queue
         // else {message_push(messages, message);}
-        else {enqueue_msg(messages, message);}
+        // else {enqueue_msg(messages, message);}
+        enqueue_msg(messages, message);
     }
 }
 
@@ -135,7 +136,7 @@ void B_input(struct pkt packet) {
         struct pkt *respondPkt;
         // Make our ACK packet
         int respond_checksum = calculateChecksumForResponse(0, packet.seqnum);
-        respondPkt = make_packet(message, 0, packet.seqnum, respond_checksum);
+        respondPkt = make_packet(message->data, 0, packet.seqnum, respond_checksum);
 
         // Send the ACK message
         tolayer3(BEntity, *respondPkt);

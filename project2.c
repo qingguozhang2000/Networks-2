@@ -883,8 +883,9 @@ void tolayer5( int AorB, struct msg message) {
     // Note that we're asking for the string that was generated on behalf
     // of the other entity.
     GetMessageString( (AorB + 1) % 2, j, ExpectedString ); 
+    printf("**Expected string: %s\n", ExpectedString);
     if ( strncmp( ExpectedString, &(message.data[0]), MESSAGE_LENGTH ) != 0 ) {
-        printf( "\t\tTOLAYER5:  PANIC!!  Data Received in this packet are wrong\n");
+        printf( "\t\t**TOLAYER5:  PANIC!!  Data Received in this packet are wrong\n");
         NumMsgs5To4WithErr++;   // number of messages incorrectly received
     }
     CurrentNSim++;
