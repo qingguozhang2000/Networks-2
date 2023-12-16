@@ -13,6 +13,9 @@
 struct msgQueue { 
         struct msg waitingMessage; 
         struct msgQueue *next; 
+
+        struct msgQueue *front;
+        struct msgQueue *rear;
 };
 
 //Structure for storing sent packets, so once timer runs out the 
@@ -38,9 +41,17 @@ struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum);
 
 struct msg* packet_to_message(struct pkt *p_packet);
 
+int isempty(struct msgQueue messages);
+
+void enqueue_msg(struct msgQueue* messages, struct msg message);
+
+struct msg dequeue_msg(struct msgQueue* messages);
+
 struct msg message_pop(struct msgQueue* messages);
 
 void message_push(struct msgQueue* messages, struct msg message);
+
+void message_push_int(struct msgQueue* messages, struct msg message);
 
 void copyPacket(struct pkt endP, struct pkt initP);
 

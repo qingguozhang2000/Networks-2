@@ -33,6 +33,55 @@ struct msg* packet_to_message(struct pkt *p_packet) {
     return new_message;
 }
 
+int isempty(struct msgQueue messages) {
+    if (messages.front == NULL && messages.rear == NULL) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void enqueue_msg(struct msgQueue* messages, struct msg message) {
+    struct msgQueue *m_ptr;
+    m_ptr = (struct msgQueue*) malloc(sizeof(struct msgQueue));
+    m_ptr->waitingMessage = message;
+    m_ptr->next = NULL;
+
+    if(messages->front == NULL) {
+        messages->front = m_ptr;
+        messages->rear = m_ptr;
+    }
+    else
+    {
+        messages->rear->next = m_ptr;
+        messages->rear = m_ptr;
+    }
+}
+
+struct msg dequeue_msg(struct msgQueue* messages) {
+    // struct msgQueue dequeued_msg;
+    struct msg dequeued_msg;
+    // dequeued_msg = (struct msg) malloc(sizeof(struct msg));
+
+    if(isempty(*messages))
+    {
+        printf("Queue is empty.\n");
+    }
+    else if (messages->front == messages->rear)
+    {
+        dequeued_msg = messages->front->waitingMessage;
+        free(messages->front);
+        messages->front = messages->rear = NULL;
+    }
+    else
+    {
+        dequeued_msg = messages->front->waitingMessage;
+        messages->front = messages->front->next;
+    }
+
+    return dequeued_msg;
+}
+
 struct msg message_pop(struct msgQueue* messages) {
     printf("**%s, ", messages->waitingMessage);
     // Copy our message
@@ -48,21 +97,16 @@ struct msg message_pop(struct msgQueue* messages) {
 
     // Return our message
     return pop_message;
-
-    // // Check to see if this queue node is the last node
-    // if (messages->next == NULL) {
-    //     // Copy our message
-    //     struct msg pop_message;
-    //     copyMessage(&pop_message, &messages->waitingMessage);
-    //     // Message is gone
-    //     messages = NULL;
-    //     // Return our message
-    //     return pop_message;
-    // } else {
-    //     // Recurse to the next node
-    //     return message_pop(messages->next);
-    // }
 }
+
+// void message_push(struct msgQueue* messages, struct msg message) {
+//     // If the first node is empty, fill that
+//     if (messages == NULL) {
+//         messages->waitingMessage = message;
+//     }
+//     // Otherwise, pass our current messages to the internal function
+//     else {message_push_int(messages, message);}
+// }
 
 void message_push(struct msgQueue* messages, struct msg message) {
     // Get the old messages
@@ -73,6 +117,18 @@ void message_push(struct msgQueue* messages, struct msg message) {
     messages->waitingMessage = message;
     // Put our old message queue into the chain
     messages->next = p_old_queue;
+    
+    // // if next node is empty
+    // if (messages->next == NULL) {
+    //     // Create our next node
+    //     struct msgQueue new_queue = {message, NULL};
+    //     // Attach our next node to our current chain
+    //     messages->next = &new_queue;
+    // // otherwise
+    // } else {
+    //     // do that for the next round
+    //     message_push(messages->next, message);
+    // }
 }
 
 void copyPacket(struct pkt endP, struct pkt initP) {

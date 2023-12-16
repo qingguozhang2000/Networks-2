@@ -13,6 +13,8 @@ struct pktQueue *pktBufferHead;
 struct msg last_message;
 struct pkt *last_packet;
 
+int first_message_sent = 0;
+
 int message_state;
 
 /* ***************************************************************************
@@ -79,7 +81,7 @@ void A_output(struct msg message) {
     // If ready to send the next message
     if (message_state == SEND_MESSAGE) {
         // Allocate memory and make our packet
-        struct pkt *packet =(struct pkt*) malloc(sizeof(struct pkt));
+        struct pkt *packet = (struct pkt*) malloc(sizeof(struct pkt));
         packet = message_to_packet(&message, seq_num, 0);
         printf("**\n");
         printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(&message, seq_num, 0));
@@ -97,8 +99,14 @@ void A_output(struct msg message) {
         printf("**Current message: %s, Last message: %s\n", message.data, last_message.data);
         message_state = WAIT_FOR_ACK;
     } else if (message_state == WAIT_FOR_ACK) {
+        // If it is the first message, start our struct
+        if (!first_message_sent) {
+            messages->waitingMessage = message;
+            first_message_sent = 1;
+        }
         // Put the next message into the queue
-        message_push(messages, message);
+        // else {message_push(messages, message);}
+        else {enqueue_msg(messages, message);}
     }
 }
 
@@ -166,7 +174,11 @@ void A_input(struct pkt packet) {
 
         // Send the next message
         printf("**OUR MESSAGE QUEUE:\n");
-        struct msg next_message = message_pop(messages);
+        // struct msg next_message = message_pop(messages);
+        struct msg next_message = dequeue_msg(messages);
+        // Manually try to pop messages
+        // messages = messages->next;
+        // isempty(messages);
         printf("\n");
         A_output(next_message);
     } else {
