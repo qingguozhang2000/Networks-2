@@ -68,18 +68,18 @@ void A_output(struct msg message) {
     // If ready to send the next message
     if (message_state == SEND_MESSAGE) {
         // Allocate memory and make our packet
-        struct pkt *packet = message_to_packet(&message, a_seq_num, a_seq_num);
+        struct pkt packet = message_to_packet(&message, a_seq_num, a_seq_num);
         printf("**\n");
-        printf("**INITIALIZED A NEW MESSAGE, a_seq_num: %d, checksum: %d\n", a_seq_num, calculateChecksum(packet));
+        printf("**INITIALIZED A NEW MESSAGE, a_seq_num: %d, checksum: %d\n", a_seq_num, packet.checksum);
         
         // Send our packet
-        tolayer3(AEntity, *packet);
+        tolayer3(AEntity, packet);
 
         // Start timer
         startTimer(AEntity, TIMER_TIME);
 
         // Log this packet as the last packet sent
-        copyPacket(&last_packet, packet);
+        copy_packet(&last_packet, &packet);
         message_state = WAIT_FOR_ACK;
     } else if (message_state == WAIT_FOR_ACK) {
         enqueue_msg(message_queue, message);
@@ -94,7 +94,7 @@ void A_output(struct msg message) {
  * packet is the (possibly corrupted) packet sent from the A-side.
  */
 void B_input(struct pkt packet) {
-    debugLog("B_input", "received a packet from A");
+    debug_log("B_input", "received a packet from A");
 
     // If the packet is not corrupted, we will send a ACK regardless
     if (!is_corrupt(&packet)) {
@@ -102,14 +102,13 @@ void B_input(struct pkt packet) {
 
         // Send the ACK message
         tolayer3(BEntity, ack_packet);
-        startTimer(BEntity, TIMER_TIME);
 
         // if the packet sequence number is what B expected
         // we send the message to layer 5 and toggle B's expected sequence number
         if (packet.seqnum == b_seq_num) {
-            struct msg *message = packet_to_message(&packet);
+            struct msg message = packet_to_message(&packet);
             // Pass on the message to Layer 5
-            tolayer5(BEntity, *message);
+            tolayer5(BEntity, message);
             toggle_0_1(&b_seq_num);
         }
     }
@@ -158,7 +157,7 @@ void A_input(struct pkt packet) {
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void A_timerinterrupt() {
-    sendLastPacket();
+    send_last_packet();
     startTimer(AEntity, TIMER_TIME);
 }  
 

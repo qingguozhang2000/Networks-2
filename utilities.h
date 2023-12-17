@@ -28,36 +28,18 @@ extern struct pkt last_packet;
 
 #endif
 
-struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum);
+struct pkt message_to_packet(struct msg *p_message, int seqnum, int acknum);
+struct msg packet_to_message(struct pkt *p_packet);
+struct pkt make_ack_packet(int seqnum);
+void copy_packet(struct pkt *p_to, struct pkt *p_from);
+void send_last_packet();
+void toggle_0_1(int *p_number);
 
-struct msg* packet_to_message(struct pkt *p_packet);
+int calculate_checksum(struct pkt *p_packet);
+int is_corrupt(struct pkt *p_packet);
 
-struct pkt make_ack_packet(int a_seq_num);
+int is_empty(struct msgQueue *message_queue);
+void enqueue_msg(struct msgQueue *message_queue, struct msg message);
+struct msg dequeue_msg(struct msgQueue *message_queue);
 
-int isempty(struct msgQueue *message_queue);
-
-void enqueue_msg(struct msgQueue* message_queue, struct msg message);
-
-struct msg dequeue_msg(struct msgQueue* message_queue);
-
-struct msg message_pop(struct msgQueue* message_queue);
-
-void message_push(struct msgQueue* message_queue, struct msg message);
-
-void message_push_int(struct msgQueue* message_queue, struct msg message);
-
-void copyPacket(struct pkt *endP, struct pkt *initP);
-
-void copyMessage(struct msg* endM, struct msg *initM);
-
-void sendLastPacket();
-
-int calculateChecksum(struct pkt *p_packet);
-
-struct pkt* make_packet(char payload[20], int seqnum, int acknum, int checksum);
-
-int is_corrupt(struct pkt* test_packet);
-
-void toggle_0_1(int* p_number);
-
-void debugLog(char* function_name, char* log_message);
+void debug_log(char *function_name, char *log_message);
