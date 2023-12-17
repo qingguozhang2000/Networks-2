@@ -4,22 +4,17 @@
 #include "project2.h"
 #include "utilities.h"
 
+extern int TraceLevel;
+
 struct pkt* message_to_packet(struct msg *p_message, int seqnum, int acksum) {
-    struct pkt* new_packet = (struct pkt*) malloc(sizeof(struct pkt));
+    struct pkt* p_packet = (struct pkt*) malloc(sizeof(struct pkt));
 
+    p_packet->seqnum = seqnum;
+    p_packet->acknum = acksum;
+    memcpy(p_packet->payload, p_message->data, MESSAGE_LENGTH);
+    p_packet->checksum = calculateChecksum(p_packet);
 
-    new_packet->seqnum = seqnum;
-    new_packet->acknum = acksum;
-    int new_checksum = calculateChecksum(p_message->data, new_packet->seqnum, new_packet->acknum);
-    new_packet->checksum = new_checksum;
-    // new_packet->checksum = 0;
-
-
-    memcpy(new_packet->payload, p_message->data, 20 * sizeof(char));
-    // printf("Message: %s, Packet data: %s\n", , supposed_checksum);
-
-
-    return new_packet;
+    return p_packet;
 }
 
 
@@ -33,108 +28,99 @@ struct msg* packet_to_message(struct pkt *p_packet) {
     return new_message;
 }
 
-int isempty(struct msgQueue messages) {
-    if (messages.front == NULL && messages.rear == NULL) {
+struct pkt make_ack_packet(int a_seq_num) {
+    // Declare our ACK packet
+    struct pkt ack_packet;
+
+    // Make our ACK packet
+    ack_packet.seqnum = a_seq_num;
+    ack_packet.acknum = a_seq_num;
+    memset(ack_packet.payload, '\0', MESSAGE_LENGTH);
+    ack_packet.checksum = calculateChecksum(&ack_packet);
+
+    return ack_packet;
+}
+
+int isempty(struct msgQueue *message_queue) {
+    if (message_queue->front == NULL && message_queue->rear == NULL) {
         return 1;
     } else {
         return 0;
     }
 }
 
-void enqueue_msg(struct msgQueue* messages, struct msg message) {
+void enqueue_msg(struct msgQueue* message_queue, struct msg message) {
     struct msgQueue *m_ptr;
     m_ptr = (struct msgQueue*) malloc(sizeof(struct msgQueue));
     m_ptr->waitingMessage = message;
     m_ptr->next = NULL;
 
-    if(messages->front == NULL) {
-        messages->front = m_ptr;
-        messages->rear = m_ptr;
+    if(message_queue->front == NULL) {
+        message_queue->front = m_ptr;
+        message_queue->rear = m_ptr;
     }
     else
     {
-        messages->rear->next = m_ptr;
-        messages->rear = m_ptr;
+        message_queue->rear->next = m_ptr;
+        message_queue->rear = m_ptr;
     }
 }
 
-struct msg dequeue_msg(struct msgQueue* messages) {
-    // struct msgQueue dequeued_msg;
+struct msg dequeue_msg(struct msgQueue* message_queue) {
     struct msg dequeued_msg;
-    // dequeued_msg = (struct msg) malloc(sizeof(struct msg));
 
-    if(isempty(*messages))
+    if (isempty(message_queue))
     {
         printf("Queue is empty.\n");
     }
-    else if (messages->front == messages->rear)
+    else if (message_queue->front == message_queue->rear)
     {
-        dequeued_msg = messages->front->waitingMessage;
-        free(messages->front);
-        messages->front = messages->rear = NULL;
+        dequeued_msg = message_queue->front->waitingMessage;
+        free(message_queue->front);
+        message_queue->front = message_queue->rear = NULL;
     }
     else
     {
-        dequeued_msg = messages->front->waitingMessage;
-        messages->front = messages->front->next;
+        dequeued_msg = message_queue->front->waitingMessage;
+        message_queue->front = message_queue->front->next;
     }
 
     return dequeued_msg;
 }
 
-struct msg message_pop(struct msgQueue* messages) {
-    printf("**%s, ", messages->waitingMessage.data);
+struct msg message_pop(struct msgQueue* message_queue) {
+    printf("**%s, ", message_queue->waitingMessage.data);
     // Copy our message
     struct msg pop_message;
-    if (strlen(messages->waitingMessage.data) == 20) {
-        copyMessage(&pop_message, &messages->waitingMessage);
+    if (strlen(message_queue->waitingMessage.data) == 20) {
+        copyMessage(&pop_message, &message_queue->waitingMessage);
     } else {
         strcpy(pop_message.data, "");
     }
 
     // Pop the top off
-    messages = messages->next;
+    message_queue = message_queue->next;
 
     // Return our message
     return pop_message;
 }
 
-// void message_push(struct msgQueue* messages, struct msg message) {
-//     // If the first node is empty, fill that
-//     if (messages == NULL) {
-//         messages->waitingMessage = message;
-//     }
-//     // Otherwise, pass our current messages to the internal function
-//     else {message_push_int(messages, message);}
-// }
-
-void message_push(struct msgQueue* messages, struct msg message) {
-    // Get the old messages
+void message_push(struct msgQueue* message_queue, struct msg message) {
+    // Get the old message_queue
     struct msgQueue* p_old_queue = (struct msgQueue*) malloc(sizeof(struct msgQueue));
-    memcpy(p_old_queue, messages, sizeof(struct msgQueue));
+    memcpy(p_old_queue, message_queue, sizeof(struct msgQueue));
 
     // Replace the message in our queue with the new message
-    messages->waitingMessage = message;
+    message_queue->waitingMessage = message;
     // Put our old message queue into the chain
-    messages->next = p_old_queue;
-    
-    // // if next node is empty
-    // if (messages->next == NULL) {
-    //     // Create our next node
-    //     struct msgQueue new_queue = {message, NULL};
-    //     // Attach our next node to our current chain
-    //     messages->next = &new_queue;
-    // // otherwise
-    // } else {
-    //     // do that for the next round
-    //     message_push(messages->next, message);
-    // }
+    message_queue->next = p_old_queue;
 }
 
-void copyPacket(struct pkt endP, struct pkt initP) {
-    endP.acknum = initP.acknum;
-    endP.acknum = initP.acknum;
-    memcpy(endP.payload, initP.payload, MESSAGE_LENGTH);
+void copyPacket(struct pkt *endP, struct pkt *initP) {
+    endP->seqnum = initP->seqnum;
+    endP->acknum = initP->acknum;
+    endP->checksum = initP->checksum;
+    memcpy(endP->payload, initP->payload, MESSAGE_LENGTH);
 }
 
 void copyMessage(struct msg* endM, struct msg *initM) {
@@ -142,24 +128,23 @@ void copyMessage(struct msg* endM, struct msg *initM) {
 }
 
 void sendLastPacket() {
-    tolayer3(AEntity, *last_packet);
+    stopTimer(AEntity);
+    tolayer3(AEntity, last_packet);
     startTimer(AEntity, TIMER_TIME);
 }
 
 
 //calculate checksum; this function comes from internet
-int calculateChecksum(char* vdata, int seqnum, int acknum){
+int calculateChecksum(struct pkt* p_packet){
     int i, checksum = 0;
+    char *payload = p_packet->payload;
 
-
-    for(i = 0; i < MESSAGE_LENGTH; i++){
-        checksum += (int)(vdata[i]) * i;
+    for(i = 0; i < MESSAGE_LENGTH; i++) {
+        checksum += (int)(payload[i]) * i;
     }
 
-
-    checksum += acknum * 21;
-    checksum += seqnum * 22;
-
+    checksum += p_packet->acknum * 21;
+    checksum += p_packet->seqnum * 22;
 
     return checksum;
 }
@@ -175,55 +160,12 @@ struct pkt* make_packet(char payload[20], int seqnum, int acknum, int checksum) 
     return return_packet;
 }
 
-int packetNotCorrupt(struct pkt* test_packet) {
-    int not_corrupted;
-
-    int wanted_sum = test_packet->checksum;
-    int current_sum = calculateChecksum(test_packet->payload, test_packet->seqnum, test_packet->acknum);
+int is_corrupt(struct pkt* p_packet) {
+    int wanted_sum = p_packet->checksum;
+    int current_sum = calculateChecksum(p_packet);
     printf("**Wanted sum: %d, Actual sum: %d\n", wanted_sum, current_sum);
 
-    if (wanted_sum == current_sum) {
-        not_corrupted = TRUE;
-    } else {
-        not_corrupted = FALSE;
-    }
-
-    return not_corrupted;
-}
-
-int responseNotCorrupt(struct pkt* test_packet) {
-    int not_corrupted;
-
-    int wanted_sum = test_packet->checksum;
-    int current_sum = calculateChecksumForResponse(test_packet->seqnum, test_packet->acknum);
-    printf("**Wanted sum: %d, Actual sum: %d\n", wanted_sum, current_sum);
-
-    if (wanted_sum == current_sum) {
-        not_corrupted = TRUE;
-    } else {
-        not_corrupted = FALSE;
-    }
-
-    return not_corrupted;
-}
-
-int isCorrectPacket(struct pkt* packet) {
-    int is_correct;
-    
-    int packet_ack_num = packet->acknum;
-
-    if (seq_num == packet_ack_num) {
-        is_correct = 1;
-    } else {
-        is_correct = 0;
-    }
-
-    return is_correct;
-}
-
-//calculate checksum for respond packet
-int calculateChecksumForResponse(int seqnum, int acknum){
-    return acknum + seqnum * 2;
+    return (wanted_sum != current_sum) ? TRUE : FALSE;
 }
 
 void toggle_0_1(int* p_number) {
@@ -231,5 +173,7 @@ void toggle_0_1(int* p_number) {
 }
 
 void debugLog(char* function_name, char* log_message) {
-    printf("*****************%s: %s*****************\n", function_name, log_message);
+    if (TraceLevel >= 2) {
+        printf("***%s: %s***\n", function_name, log_message);
+    }
 }

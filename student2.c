@@ -4,18 +4,12 @@
 #include "project2.h"
 #include "utilities.h"
 
-int seq_num;
-int ack_num;
-
-struct msgQueue *messages;
-struct pktQueue *pktBufferHead;
-
-struct msg last_message;
-struct pkt *last_packet;
-
-int first_message_sent = 0;
-
 int message_state;
+int a_seq_num;
+int b_seq_num;
+
+struct pkt last_packet;
+struct msgQueue *message_queue;
 
 /* ***************************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -47,16 +41,9 @@ int message_state;
 /* entity A routines are called. You can use it to do any initialization */
 void A_init() {
     printf("**A initialized\n");
-    seq_num = 0;
-    ack_num = 0;
-
+    a_seq_num = 0;
     message_state = SEND_MESSAGE;
-
-    messages = (struct msgQueue*) malloc(sizeof(struct msgQueue));
-    pktBufferHead = (struct pktQueue*) malloc(sizeof(struct pktQueue));
-    
-    // last_message = (struct msg*) malloc(sizeof(struct msg));
-    last_packet = (struct pkt*) malloc(sizeof(struct pkt));
+    message_queue = (struct msgQueue*) malloc(sizeof(struct msgQueue));
 }
 
 
@@ -65,7 +52,7 @@ void A_init() {
  * entity B routines are called. You can use it to do any initialization
  */
 void B_init() {
-
+    b_seq_num = 0;
 }
 
 
@@ -81,10 +68,9 @@ void A_output(struct msg message) {
     // If ready to send the next message
     if (message_state == SEND_MESSAGE) {
         // Allocate memory and make our packet
-        struct pkt *packet = (struct pkt*) malloc(sizeof(struct pkt));
-        packet = message_to_packet(&message, seq_num, 0);
+        struct pkt *packet = message_to_packet(&message, a_seq_num, a_seq_num);
         printf("**\n");
-        printf("**INITIALIZED A NEW MESSAGE, seq_num: %d, checksum: %d\n", seq_num, calculateChecksum(message.data, seq_num, 0));
+        printf("**INITIALIZED A NEW MESSAGE, a_seq_num: %d, checksum: %d\n", a_seq_num, calculateChecksum(packet));
         
         // Send our packet
         tolayer3(AEntity, *packet);
@@ -93,21 +79,10 @@ void A_output(struct msg message) {
         startTimer(AEntity, TIMER_TIME);
 
         // Log this packet as the last packet sent
-        copyPacket(*last_packet, *packet);
-        // Log the message as the last message sent
-        copyMessage(&last_message, &message);
-        printf("**Current message: %s, Last message: %s\n", message.data, last_message.data);
+        copyPacket(&last_packet, packet);
         message_state = WAIT_FOR_ACK;
     } else if (message_state == WAIT_FOR_ACK) {
-        // If it is the first message, start our struct
-        // if (!first_message_sent) {
-        //     messages->waitingMessage = message;
-        //     first_message_sent = 1;
-        // }
-        // Put the next message into the queue
-        // else {message_push(messages, message);}
-        // else {enqueue_msg(messages, message);}
-        enqueue_msg(messages, message);
+        enqueue_msg(message_queue, message);
     }
 }
 
@@ -119,27 +94,24 @@ void A_output(struct msg message) {
  * packet is the (possibly corrupted) packet sent from the A-side.
  */
 void B_input(struct pkt packet) {
-    printf("**RECEIVED A NEW MESSAGE\n");
-    struct msg *message = (struct msg*) malloc(sizeof(struct msg));
-    message = packet_to_message(&packet);
+    debugLog("B_input", "received a packet from A");
 
-    // // Checks to see if the packet was corrupted
-    int notcorrupt = packetNotCorrupt(&packet);
-    // printf("Packet checksum: %d, Supposed checksum: %d\n", packet.checksum, supposed_checksum);
-    
-    // If the packet is the right sequence and the right checksum
-    if (notcorrupt) {
-        // Pass on the message to Layer 5
-        tolayer5(BEntity, *message);
-
-        // Declare our ACK packet
-        struct pkt *respondPkt;
-        // Make our ACK packet
-        int respond_checksum = calculateChecksumForResponse(0, packet.seqnum);
-        respondPkt = make_packet(message->data, 0, packet.seqnum, respond_checksum);
+    // If the packet is not corrupted, we will send a ACK regardless
+    if (!is_corrupt(&packet)) {
+        struct pkt ack_packet = make_ack_packet(a_seq_num);
 
         // Send the ACK message
-        tolayer3(BEntity, *respondPkt);
+        tolayer3(BEntity, ack_packet);
+        startTimer(BEntity, TIMER_TIME);
+
+        // if the packet sequence number is what B expected
+        // we send the message to layer 5 and toggle B's expected sequence number
+        if (packet.seqnum == b_seq_num) {
+            struct msg *message = packet_to_message(&packet);
+            // Pass on the message to Layer 5
+            tolayer5(BEntity, *message);
+            toggle_0_1(&b_seq_num);
+        }
     }
 }
 
@@ -152,41 +124,29 @@ void B_input(struct pkt packet) {
  */
 void A_input(struct pkt packet) {
     printf("**RECEIVE ACK\n");
-    // // Extract our message
-    // struct msg *message = packet_to_message(&packet);
 
     // Checks to see if the packet was corrupted
-    int notcorrupt = responseNotCorrupt(&packet);
+    int packet_corrupted = is_corrupt(&packet);
     // Checks if the acknum of the ACK packet is the same as the current seqnum
-    int correct_packet = isCorrectPacket(&packet);
+    int correct_packet = (packet.seqnum == a_seq_num);
+    printf("*** packet.seqnum=%d a_seq_num=%d ***\n", packet.seqnum, a_seq_num);
     
     // If the packet is the right sequence and the right checksum
-    printf("**Not corrupt? %d, Correct packet? %d\n", notcorrupt, correct_packet);
-    if (notcorrupt && correct_packet) {
+    printf("**Packet corrupted? %d, Correct packet? %d\n", packet_corrupted, correct_packet);
+    if (!packet_corrupted && correct_packet) {
         printf("**Should not be corrupt!\n");
-        printf("**Old numbers: %d, %d\n", seq_num, ack_num);
+        printf("**Old numbers: %d, %d\n", a_seq_num, a_seq_num);
         // Toggle our seq and ack numbers
-        toggle_0_1(&seq_num);
-        toggle_0_1(&ack_num);
-        printf("**New numbers: %d, %d\n", seq_num, ack_num);
+        toggle_0_1(&a_seq_num);
+        printf("**New numbers: %d, %d\n", a_seq_num, a_seq_num);
         // Stop our timer
         stopTimer(AEntity);
         message_state = SEND_MESSAGE;
 
         // Send the next message
         printf("**OUR MESSAGE QUEUE:\n");
-        // struct msg next_message = message_pop(messages);
-        struct msg next_message = dequeue_msg(messages);
-        // Manually try to pop messages
-        // messages = messages->next;
-        // isempty(messages);
-        printf("\n");
+        struct msg next_message = dequeue_msg(message_queue);
         A_output(next_message);
-    } else {
-        // Send the last message again
-        printf("**Last message sent!\n");
-        message_state = SEND_MESSAGE;
-        A_output(last_message);
     }
 }
 
@@ -198,8 +158,8 @@ void A_input(struct pkt packet) {
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void A_timerinterrupt() {
-    message_state = SEND_MESSAGE;
     sendLastPacket();
+    startTimer(AEntity, TIMER_TIME);
 }  
 
 
@@ -213,7 +173,6 @@ void A_timerinterrupt() {
  * implementation is bi-directional.
  */
 void B_output(struct msg message)  {
-
 }
 
 
@@ -224,5 +183,4 @@ void B_output(struct msg message)  {
  * and stoptimer() in the writeup for how the timer is started and stopped.
  */
 void  B_timerinterrupt() {
-    sendLastPacket();
 }
